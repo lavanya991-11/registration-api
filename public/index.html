@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Partner Registration</title>
+    <style>
+        :root { color-scheme: light dark; }
+        * { box-sizing: border-box; }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0; min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, #0b6 0%, #06b 100%);
+            padding: 24px;
+        }
+        .card {
+            background: #fff; color: #1a1a1a;
+            width: 100%; max-width: 460px;
+            border-radius: 16px; padding: 40px 32px;
+            box-shadow: 0 20px 60px rgba(0,0,0,.25);
+            text-align: center;
+        }
+        h1 { margin: 0 0 8px; font-size: 1.6rem; }
+        p.lead { margin: 0 0 28px; color: #555; font-size: 1rem; }
+        .choices { display: grid; gap: 14px; }
+        a.btn {
+            display: block; padding: 16px; border-radius: 10px;
+            text-decoration: none; font-weight: 600; font-size: 1.05rem;
+            transition: transform .08s ease, box-shadow .08s ease;
+        }
+        a.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,.15); }
+        a.customer { background: #0b6; color: #fff; }
+        a.vendor { background: #06b; color: #fff; }
+        .note { margin-top: 26px; font-size: .85rem; color: #777; line-height: 1.5; }
+        .note code { background: #f0f0f0; padding: 1px 5px; border-radius: 4px; }
+        @media (prefers-color-scheme: dark) {
+            .card { background: #1e1e1e; color: #eee; }
+            p.lead { color: #aaa; }
+            .note { color: #999; }
+            .note code { background: #333; }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Partner Registration</h1>
+        <p class="lead">Please choose how you'd like to register with us.</p>
+        <div class="choices">
+            <a class="btn customer" href="/customer.html">Register as a Customer</a>
+            <a class="btn vendor" href="/vendor.html">Register as a Vendor</a>
+        </div>
+        <p class="note">
+            If you received a registration link by email, open that link directly &mdash;
+            your details will be filled in automatically.
+        </p>
+    </div>
+</body>
+</html>

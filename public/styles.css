@@ -1,35 +1,35 @@
 /* Shared modern styling for the registration forms.
    Light palette. Accent is set per page via body.customer / body.vendor. */
 :root {
-    --accent: #18a97c;
-    --accent-2: #27bd8d;
-    --accent-strong: #0e8763;
+    --accent: #16a394;
+    --accent-2: #2ebaa9;
+    --accent-strong: #0e766b;
     --grad: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
-    --banner-a: #e9faf3;
-    --banner-b: #d6f4e7;
-    --banner-text: #0c7a59;
-    --banner-sub: #4f7d6c;
-    --bg: #f5f8fc;
+    --banner-a: #ecf7f5;
+    --banner-b: #dcf0ec;
+    --banner-text: #0d6b60;
+    --banner-sub: #5b7d78;
+    --bg: #f5f6f9;
     --card: #ffffff;
-    --text: #24303d;
-    --muted: #8a94a3;
-    --label: #5a6675;
-    --border: #e7ecf3;
-    --field: #fbfcfe;
+    --text: #2b323c;
+    --muted: #8b93a1;
+    --label: #59616f;
+    --border: #e8eaf0;
+    --field: #fafbfc;
     --field-focus: #ffffff;
-    --danger: #e06666;
+    --danger: #e0776b;
     --radius: 16px;
     --shadow: 0 14px 40px rgba(30, 45, 70, .08);
     color-scheme: light dark;
 }
 body.vendor {
-    --accent: #4b8ef7;
-    --accent-2: #6ba6fb;
-    --accent-strong: #2f6fe0;
-    --banner-a: #ecf3fe;
-    --banner-b: #dde9fe;
-    --banner-text: #2b62c9;
-    --banner-sub: #566f95;
+    --accent: #6366f1;
+    --accent-2: #8183f6;
+    --accent-strong: #4f46e5;
+    --banner-a: #eef0fe;
+    --banner-b: #e4e6fd;
+    --banner-text: #4338ca;
+    --banner-sub: #6b6f95;
 }
 
 * { box-sizing: border-box; }
@@ -128,8 +128,8 @@ button[type="submit"]:disabled { opacity: .6; cursor: not-allowed; transform: no
     :root {
         --bg: #0f141b; --card: #161c25; --text: #e7ebf0; --muted: #8b95a3; --label: #aab3c0;
         --border: #2a323d; --field: #1c232d; --field-focus: #202834;
-        --banner-a: #172230; --banner-b: #14202c; --banner-text: #4fd3a6; --banner-sub: #9aa4b2;
+        --banner-a: #16212a; --banner-b: #131d25; --banner-text: #3fd0c0; --banner-sub: #9aa4b2;
     }
-    body.vendor { --banner-text: #7fb0fb; }
+    body.vendor { --banner-text: #a5a8fb; }
     .line-row .remove { background: #2a323d; color: #9aa4b2; }
 }

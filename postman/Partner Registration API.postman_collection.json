@@ -1,0 +1,333 @@
+{
+  "info": {
+    "name": "Partner Registration API",
+    "description": "Test the Customer/Vendor registration flow — both the Business Central API directly (OAuth + create) and the local Express backend. Fill in the environment variables first (see the 'Partner Reg - Local/Cloud' environment).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "bcApiBase",
+      "value": "https://api.businesscentral.dynamics.com/v2.0/{{bcEnvironment}}/api/{{apiPublisher}}/{{apiGroup}}/{{apiVersion}}/companies({{companyId}})",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Get OAuth Token (S2S)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "const json = pm.response.json();",
+              "if (json.access_token) {",
+              "  pm.environment.set('accessToken', json.access_token);",
+              "  console.log('Access token saved to environment.');",
+              "} else {",
+              "  console.log('No access_token in response:', pm.response.text());",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/x-www-form-urlencoded" }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "grant_type", "value": "client_credentials" },
+            { "key": "client_id", "value": "{{clientId}}" },
+            { "key": "client_secret", "value": "{{clientSecret}}" },
+            { "key": "scope", "value": "https://api.businesscentral.dynamics.com/.default" }
+          ]
+        },
+        "url": {
+          "raw": "https://login.microsoftonline.com/{{tenantId}}/oauth2/v2.0/token",
+          "protocol": "https",
+          "host": ["login", "microsoftonline", "com"],
+          "path": ["{{tenantId}}", "oauth2", "v2.0", "token"]
+        },
+        "description": "Client-credentials (service-to-service) token from Azure AD. Run this first — the test script saves {{accessToken}} for the requests below."
+      }
+    },
+    {
+      "name": "2. Create Customer Registration (BC direct)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Created (201)', () => pm.response.to.have.status(201));",
+              "const json = pm.response.json();",
+              "if (json.regNo) {",
+              "  pm.environment.set('lastRegNo', json.regNo);",
+              "  console.log('Created registration:', json.regNo);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"partnerType\": \"Customer\",\n  \"regType\": \"Create\",\n  \"tradeName\": \"Acme Trading LLC\",\n  \"partnerEmail\": \"info@acme.example\",\n  \"phoneNo\": \"+971500000000\",\n  \"website\": \"https://acme.example\",\n  \"tradeLicenseNumber\": \"TL-12345\",\n  \"companyRegNumber\": \"CR-98765\",\n  \"entityType\": \"LLC\",\n  \"countryOfIncorporation\": \"AE\",\n  \"placeOfRegistration\": \"Dubai\",\n  \"vatRegistrationNo\": \"100000000000003\",\n  \"address\": \"123 Sheikh Zayed Rd\",\n  \"city\": \"Dubai\",\n  \"postCode\": \"00000\",\n  \"countryRegionCode\": \"AE\"\n}"
+        },
+        "url": {
+          "raw": "{{bcApiBase}}/partnerRegistrations",
+          "host": ["{{bcApiBase}}"],
+          "path": ["partnerRegistrations"]
+        },
+        "description": "Creates a Customer registration via the existing partnerRegistrations API (page 90123). partnerType is set to Customer in the body."
+      }
+    },
+    {
+      "name": "3. Create Vendor Registration (BC direct)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Created (201)', () => pm.response.to.have.status(201));",
+              "const json = pm.response.json();",
+              "if (json.regNo) {",
+              "  pm.environment.set('lastRegNo', json.regNo);",
+              "  console.log('Created registration:', json.regNo);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"partnerType\": \"Vendor\",\n  \"regType\": \"Create\",\n  \"tradeName\": \"Globex Suppliers FZE\",\n  \"partnerEmail\": \"sales@globex.example\",\n  \"phoneNo\": \"+971544444444\",\n  \"tradeLicenseNumber\": \"TL-55555\",\n  \"entityType\": \"FZE\",\n  \"countryOfIncorporation\": \"AE\",\n  \"placeOfRegistration\": \"Sharjah\",\n  \"vatRegistrationNo\": \"100000000000004\",\n  \"address\": \"Warehouse 7, SAIF Zone\",\n  \"city\": \"Sharjah\",\n  \"countryRegionCode\": \"AE\"\n}"
+        },
+        "url": {
+          "raw": "{{bcApiBase}}/partnerRegistrations",
+          "host": ["{{bcApiBase}}"],
+          "path": ["partnerRegistrations"]
+        },
+        "description": "Creates a Vendor registration via the existing partnerRegistrations API (page 90123). partnerType is set to Vendor in the body."
+      }
+    },
+    {
+      "name": "4. List Customer Registrations (BC direct)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+        ],
+        "url": {
+          "raw": "{{bcApiBase}}/partnerRegistrations?$filter=partnerType eq 'Customer'&$top=20",
+          "host": ["{{bcApiBase}}"],
+          "path": ["partnerRegistrations"],
+          "query": [
+            { "key": "$filter", "value": "partnerType eq 'Customer'" },
+            { "key": "$top", "value": "20" }
+          ]
+        },
+        "description": "Lists customer registrations by filtering the shared partnerRegistrations endpoint on partnerType."
+      }
+    },
+    {
+      "name": "4a. Get One Customer Registration (BC direct)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+        ],
+        "url": {
+          "raw": "{{bcApiBase}}/partnerRegistrations('{{lastRegNo}}')",
+          "host": ["{{bcApiBase}}"],
+          "path": ["partnerRegistrations('{{lastRegNo}}')"]
+        },
+        "description": "Reads a single customer registration by Reg. No. Uses {{lastRegNo}} saved by the create request."
+      }
+    },
+    {
+      "name": "4b. Update Customer Registration (BC direct PATCH)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "If-Match", "value": "*" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"phoneNo\": \"+971511111111\",\n  \"website\": \"https://acme-updated.example\",\n  \"city\": \"Abu Dhabi\"\n}"
+        },
+        "url": {
+          "raw": "{{bcApiBase}}/partnerRegistrations('{{lastRegNo}}')",
+          "host": ["{{bcApiBase}}"],
+          "path": ["partnerRegistrations('{{lastRegNo}}')"]
+        },
+        "description": "Partial update of an existing customer registration, keyed by Reg. No. If-Match: * is required by BC for PATCH. partnerType cannot be changed."
+      }
+    },
+    {
+      "name": "4c. Update Vendor Registration (BC direct PATCH)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "If-Match", "value": "*" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"phoneNo\": \"+971522222222\",\n  \"city\": \"Ajman\"\n}"
+        },
+        "url": {
+          "raw": "{{bcApiBase}}/partnerRegistrations('{{lastRegNo}}')",
+          "host": ["{{bcApiBase}}"],
+          "path": ["partnerRegistrations('{{lastRegNo}}')"]
+        },
+        "description": "Partial update of an existing vendor registration, keyed by Reg. No."
+      }
+    },
+    {
+      "name": "5. Submit Customer (Local backend)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const j = pm.response.json();",
+              "if (j && j.regNo) { pm.environment.set('lastRegNo', j.regNo); console.log('lastRegNo =', j.regNo); }"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tradeName\": \"Acme Trading LLC\",\n  \"partnerEmail\": \"info@acme.example\",\n  \"phoneNo\": \"+971500000000\",\n  \"city\": \"Dubai\",\n  \"countryRegionCode\": \"AE\"\n}"
+        },
+        "url": {
+          "raw": "{{localUrl}}/api/customer",
+          "host": ["{{localUrl}}"],
+          "path": ["api", "customer"]
+        },
+        "description": "Hits the Express backend the way the public form does. The server handles OAuth and forwards to BC — no token needed here."
+      }
+    },
+    {
+      "name": "6. Submit Vendor (Local backend)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const j = pm.response.json();",
+              "if (j && j.regNo) { pm.environment.set('lastRegNo', j.regNo); console.log('lastRegNo =', j.regNo); }"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tradeName\": \"Globex Suppliers FZE\",\n  \"partnerEmail\": \"sales@globex.example\",\n  \"city\": \"Sharjah\",\n  \"countryRegionCode\": \"AE\"\n}"
+        },
+        "url": {
+          "raw": "{{localUrl}}/api/vendor",
+          "host": ["{{localUrl}}"],
+          "path": ["api", "vendor"]
+        },
+        "description": "Same as above but for vendors."
+      }
+    },
+    {
+      "name": "6a. Get One Customer (Local backend)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{localUrl}}/api/customer/{{lastRegNo}}",
+          "host": ["{{localUrl}}"],
+          "path": ["api", "customer", "{{lastRegNo}}"]
+        },
+        "description": "Reads one customer registration through the Express backend (the same call the edit page uses to prefill)."
+      }
+    },
+    {
+      "name": "6b. Update Customer (Local backend PATCH)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"phoneNo\": \"+971511111111\",\n  \"city\": \"Abu Dhabi\"\n}"
+        },
+        "url": {
+          "raw": "{{localUrl}}/api/customer/{{lastRegNo}}",
+          "host": ["{{localUrl}}"],
+          "path": ["api", "customer", "{{lastRegNo}}"]
+        },
+        "description": "Update a customer registration through the Express backend. The server handles OAuth + If-Match and forwards the PATCH to BC."
+      }
+    },
+    {
+      "name": "6c. Update Vendor (Local backend PATCH)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"phoneNo\": \"+971522222222\",\n  \"city\": \"Ajman\"\n}"
+        },
+        "url": {
+          "raw": "{{localUrl}}/api/vendor/{{lastRegNo}}",
+          "host": ["{{localUrl}}"],
+          "path": ["api", "vendor", "{{lastRegNo}}"]
+        },
+        "description": "Update a vendor registration through the Express backend."
+      }
+    },
+    {
+      "name": "7. Health (Local backend)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{localUrl}}/health",
+          "host": ["{{localUrl}}"],
+          "path": ["health"]
+        },
+        "description": "Simple liveness check for the Express backend."
+      }
+    }
+  ]
+}

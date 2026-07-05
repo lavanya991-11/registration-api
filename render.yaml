@@ -1,0 +1,36 @@
+# Render Blueprint. In Render: New + -> Blueprint -> pick this repo.
+# Secret values (sync: false) are prompted in the dashboard, never stored in git.
+services:
+  - type: web
+    name: registration-api
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: TENANT_ID
+        sync: false
+      - key: CLIENT_ID
+        sync: false
+      - key: CLIENT_SECRET
+        sync: false
+      - key: BC_ENVIRONMENT
+        sync: false
+      - key: BC_COMPANY_ID
+        sync: false
+      - key: BC_TOKEN_URL
+        sync: false
+      - key: BC_SCOPE
+        value: https://api.businesscentral.dynamics.com/.default
+      - key: BC_API_HOST
+        value: api.businesscentral.dynamics.com
+      - key: BC_API_PUBLISHER
+        value: partnerPortal
+      - key: BC_API_GROUP
+        value: partnerPortal
+      - key: BC_API_VERSION
+        value: v2.0
+      - key: GENERATE_REG_NO
+        value: "true"
+      - key: REG_NO_PREFIX
+        value: WEB

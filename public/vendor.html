@@ -4,94 +4,98 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vendor Registration</title>
-    <style>
-        body { font-family: system-ui, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 16px; color: #1a1a1a; }
-        h1 { font-size: 1.5rem; }
-        fieldset { border: 1px solid #ddd; border-radius: 8px; margin: 16px 0; padding: 12px 16px; }
-        legend { font-weight: 600; padding: 0 6px; }
-        label { display: block; margin: 10px 0 4px; font-weight: 600; font-size: .9rem; }
-        input { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; }
-        .req::after { content: ' *'; color: #c00; }
-        .line-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) 32px; gap: 8px; align-items: center; margin-bottom: 8px; }
-        .line-row input[type="text"], .line-row input:not([type]) { margin: 0; }
-        .line-row .inline { display: flex; align-items: center; gap: 4px; font-weight: 400; margin: 0; white-space: nowrap; }
-        .line-row .inline input { width: auto; }
-        .remove { background: #eee; border: 0; border-radius: 6px; height: 32px; cursor: pointer; font-size: 1rem; }
-        .add { margin-top: 4px; background: #eef; border: 1px solid #ccd; border-radius: 6px; padding: 6px 12px; cursor: pointer; }
-        button[type="submit"] { margin-top: 20px; padding: 10px 22px; font-size: 1rem; border: 0; border-radius: 6px; background: #06b; color: #fff; cursor: pointer; }
-        button[type="submit"]:disabled { opacity: .6; cursor: not-allowed; }
-        #msg { margin-top: 16px; font-weight: 600; }
-        .ok { color: #0a7; } .err { color: #c00; }
-    </style>
+    <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
-    <h1>Vendor Registration</h1>
-    <p>Complete the form below to register as a vendor. Fields marked * are required.</p>
-    <form id="form">
-        <div id="headerSection">
-            <fieldset>
-                <legend>Company</legend>
-                <label class="req">Trade Name</label><input name="tradeName" required />
-                <label class="req">Email</label><input name="partnerEmail" type="email" required />
-                <label>Phone No.</label><input name="phoneNo" />
-                <label>Website</label><input name="website" />
-            </fieldset>
-            <fieldset>
-                <legend>Registration Details</legend>
-                <label>Trade License Number</label><input name="tradeLicenseNumber" />
-                <label>Trade License Expiry Date</label><input name="tradeLicenseExpiryDate" type="date" />
-                <label>Company Registration Number</label><input name="companyRegNumber" />
-                <label>Type of Entity</label><input name="entityType" />
-                <label>Country of Incorporation</label><input name="countryOfIncorporation" />
-                <label>Place of Registration</label><input name="placeOfRegistration" />
-                <label>VAT Registration No.</label><input name="vatRegistrationNo" />
-            </fieldset>
-            <fieldset>
-                <legend>Address</legend>
-                <label>Address</label><input name="address" />
-                <label>Address 2</label><input name="address2" />
-                <label>City</label><input name="city" />
-                <label>Post Code</label><input name="postCode" />
-                <label>Country/Region Code</label><input name="countryRegionCode" />
-            </fieldset>
+<body class="vendor">
+    <div class="wrap">
+        <div class="card">
+            <div class="banner">
+                <h1>Vendor Registration</h1>
+                <p>Complete the form below to register as a vendor. Fields marked * are required.</p>
+            </div>
+            <div class="body">
+                <form id="form">
+                    <div id="headerSection">
+                        <section class="block">
+                            <h2>Company Information</h2>
+                            <div class="grid">
+                                <div class="field full"><label class="req">Trade Name</label><input name="tradeName" required /></div>
+                                <div class="field"><label class="req">Email</label><input name="partnerEmail" type="email" required /></div>
+                                <div class="field"><label>Phone No.</label><input name="phoneNo" /></div>
+                                <div class="field full"><label>Website</label><input name="website" /></div>
+                            </div>
+                        </section>
+
+                        <section class="block">
+                            <h2>Registration Details</h2>
+                            <div class="grid">
+                                <div class="field"><label>Trade License Number</label><input name="tradeLicenseNumber" /></div>
+                                <div class="field"><label>Trade License Expiry Date</label><input name="tradeLicenseExpiryDate" type="date" /></div>
+                                <div class="field"><label>Company Registration Number</label><input name="companyRegNumber" /></div>
+                                <div class="field"><label>Type of Entity</label><input name="entityType" /></div>
+                                <div class="field"><label>Country of Incorporation</label><input name="countryOfIncorporation" /></div>
+                                <div class="field"><label>Place of Registration</label><input name="placeOfRegistration" /></div>
+                                <div class="field full"><label>VAT Registration No.</label><input name="vatRegistrationNo" /></div>
+                            </div>
+                        </section>
+
+                        <section class="block">
+                            <h2>Address</h2>
+                            <div class="grid">
+                                <div class="field full"><label>Address</label><input name="address" /></div>
+                                <div class="field full"><label>Address 2</label><input name="address2" /></div>
+                                <div class="field"><label>City</label><input name="city" /></div>
+                                <div class="field"><label>Post Code</label><input name="postCode" /></div>
+                                <div class="field"><label class="req">Country/Region Code</label><input name="countryRegionCode" required /></div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <section class="block">
+                        <h2>Contacts</h2>
+                        <div id="contacts"></div>
+                        <button type="button" class="add" data-add="contact">+ Add contact</button>
+                    </section>
+
+                    <section class="block">
+                        <h2>Bank Accounts</h2>
+                        <div id="banks"></div>
+                        <button type="button" class="add" data-add="bank">+ Add bank account</button>
+                    </section>
+
+                    <div class="actions">
+                        <button type="submit">Submit Registration</button>
+                    </div>
+                </form>
+                <div id="msg"></div>
+            </div>
         </div>
-
-        <fieldset>
-            <legend>Contacts</legend>
-            <div id="contacts"></div>
-            <button type="button" class="add" data-add="contact">+ Add contact</button>
-        </fieldset>
-
-        <fieldset>
-            <legend>Bank Accounts</legend>
-            <div id="banks"></div>
-            <button type="button" class="add" data-add="bank">+ Add bank account</button>
-        </fieldset>
-
-        <button type="submit">Submit Registration</button>
-    </form>
-    <div id="msg"></div>
+    </div>
 
     <template id="contactTemplate">
         <div class="line-row">
-            <input data-field="fullName" placeholder="Full name" />
-            <input data-field="designation" placeholder="Designation" />
-            <input data-field="mobileNumber" placeholder="Mobile number" />
-            <input data-field="emailAddress" placeholder="Email" />
             <button type="button" class="remove" title="Remove">&times;</button>
+            <div class="grid">
+                <div class="field"><label>Full Name</label><input data-field="fullName" /></div>
+                <div class="field"><label>Designation</label><input data-field="designation" /></div>
+                <div class="field"><label>Mobile Number</label><input data-field="mobileNumber" /></div>
+                <div class="field"><label>Email</label><input data-field="emailAddress" type="email" /></div>
+            </div>
         </div>
     </template>
     <template id="bankTemplate">
         <div class="line-row">
-            <input data-field="bankCode" placeholder="Bank code" />
-            <input data-field="name" placeholder="Bank name" />
-            <input data-field="bankBranchNo" placeholder="Branch no." />
-            <input data-field="bankAccountNo" placeholder="Account no." />
-            <input data-field="iban" placeholder="IBAN" />
-            <input data-field="swiftCode" placeholder="SWIFT" />
-            <input data-field="currencyCode" placeholder="Currency" />
-            <label class="inline"><input type="checkbox" data-field="isPrimary" /> Primary</label>
             <button type="button" class="remove" title="Remove">&times;</button>
+            <div class="grid">
+                <div class="field"><label>Bank Code</label><input data-field="bankCode" /></div>
+                <div class="field"><label>Bank Name</label><input data-field="name" /></div>
+                <div class="field"><label>Branch No.</label><input data-field="bankBranchNo" /></div>
+                <div class="field"><label>Account No.</label><input data-field="bankAccountNo" /></div>
+                <div class="field"><label>IBAN</label><input data-field="iban" /></div>
+                <div class="field"><label>SWIFT Code</label><input data-field="swiftCode" /></div>
+                <div class="field"><label>Currency</label><input data-field="currencyCode" /></div>
+                <div class="field inline"><label><input type="checkbox" data-field="isPrimary" /> Primary account</label></div>
+            </div>
         </div>
     </template>
 

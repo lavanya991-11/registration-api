@@ -160,13 +160,15 @@
 
                 <section class="block">
                     <h2><span class="sec-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.5 12.5 21a4.5 4.5 0 0 1-6.4-6.4l8.5-8.5a3 3 0 0 1 4.2 4.2l-8.5 8.5a1.5 1.5 0 0 1-2.1-2.1l7.8-7.8" /></svg></span>Attachments</h2>
-                    <input type="file" id="attachments" multiple hidden />
-                    <label for="attachments" class="upload-drop">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M8 7l4-4 4 4" /><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4" /></svg>
-                        <span>Click to upload documents</span>
-                        <small>Trade license, VAT certificate, etc. &mdash; PDF, JPG, PNG up to 5 MB each</small>
-                    </label>
-                    <ul id="fileList" class="file-list"></ul>
+                    <div class="upload-box">
+                        <input type="file" id="attachments" multiple hidden />
+                        <label for="attachments" class="upload-drop">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M8 7l4-4 4 4" /><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4" /></svg>
+                            <span>Click to upload documents</span>
+                            <small>Trade license, VAT certificate, etc. &mdash; PDF, JPG, PNG up to 5 MB each</small>
+                        </label>
+                        <ul id="fileList" class="file-list"></ul>
+                    </div>
                 </section>
 
                 <div id="msg"></div>

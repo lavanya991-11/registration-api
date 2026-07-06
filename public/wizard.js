@@ -12,11 +12,13 @@
     const secOf = (id) => (document.getElementById(id) ? document.getElementById(id).closest('section.block') : null);
     const groups = [
         [document.getElementById('headerSection')],
-        [secOf('contacts'), secOf('banks'), secOf('attachments')],
+        [secOf('contacts')],
+        [secOf('banks')],
+        [secOf('attachments')],
     ].map((g) => g.filter(Boolean)).filter((g) => g.length);
     if (groups.length < 2) return; // e.g. register.html — no wizard
 
-    const titles = ['Company Details', 'Contacts & Documents'];
+    const titles = ['Company Details', 'Contacts', 'Bank Accounts', 'Attachments'];
     const last = groups.length - 1;
     let current = 0;
 

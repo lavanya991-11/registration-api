@@ -13,7 +13,10 @@ app.use(cors());
 app.use(express.json({ limit: '30mb' })); // allow base64 attachment uploads
 
 // ---- Static registration forms (customer.html / vendor.html) ----
-app.use(express.static(path.join(__dirname, 'public')));
+// no-cache: browsers revalidate each load, so UI updates appear without a hard refresh.
+app.use(express.static(path.join(__dirname, 'public'), {
+    setHeaders: (res) => res.setHeader('Cache-Control', 'no-cache'),
+}));
 
 // ---- Health check ----
 app.get('/health', (_req, res) => res.json({ ok: true }));

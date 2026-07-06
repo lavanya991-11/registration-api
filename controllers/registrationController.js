@@ -53,34 +53,46 @@ module.exports = function createController(partnerType) {
 
             if (req.body?.sourceIp) console.log(`[create ${type}] sourceIp=${req.body.sourceIp}`);
 
+            const contactLines = validContactLines(req.body);
+            const bankLines = validBankLines(req.body);
+            const attachments = (Array.isArray(req.body?.attachments) ? req.body.attachments : [])
+                .map((a) => ({ fileName: a.fileName || a.name, base64: a.base64 }))
+                .filter((a) => a.fileName && a.base64);
+            const registration = { partnerType: type, header: getHeader(req.body), contactLines, bankLines, attachments };
+
+            // PREFERRED: PP Public Reg. Intake codeunit — creates header + contacts + banks
+            // + attachments (decodes base64 into the Document Attachment factbox) in one call.
+            try {
+                const env = await bc.submitRegistration(registration);
+                if (env && env.success) {
+                    console.log(`[submit ${type}/${env.regNo}] attachments saved ${env.attachmentsSaved}/${env.attachmentsReceived}`);
+                    return res.status(201).json({
+                        success: true, regNo: env.regNo, status: env.status || 'Draft',
+                        message: env.message || SUCCESS_MESSAGE,
+                        attachmentsSaved: env.attachmentsSaved, attachmentsSkipped: env.attachmentsSkipped,
+                    });
+                }
+                if (env && env.success === false) {
+                    return fail(res, 400, env.errorCode || 'BC_VALIDATION', env.message || 'Registration failed in BC.');
+                }
+            } catch (submitErr) {
+                console.error(`[submit ${type}] intake failed, falling back:`, submitErr.response?.status, submitErr.response?.data?.error?.message || submitErr.message);
+                // fall through to the legacy flow so the portal keeps working
+            }
+
+            // FALLBACK: create header, then contacts/banks via updateRegistration.
+            // (No attachments — used only until the Partner Reg. Nos. series is aligned.)
             let regNo;
             try {
-                // If BC's No. Series isn't configured, generate a regNo so the
-                // insert doesn't require it (toggle via GENERATE_REG_NO).
-                // 1) Create the header record. (regNo generated if BC No. Series isn't set.)
                 const preRegNo = config.regNo.generate ? newRegNo(config.regNo.prefix) : undefined;
                 const created = await bc.create(ENTITY, toBcPayload(req.body, type, preRegNo));
                 regNo = created.regNo;
-
-                // 2) Send contacts + banks + attachments as ONE payload to the
-                //    updateRegistration action; PP Partner Reg. Updater processes them all.
-                const contactLines = validContactLines(req.body);
-                const bankLines = validBankLines(req.body);
-                const attachments = (Array.isArray(req.body?.attachments) ? req.body.attachments : [])
-                    .map((a) => ({ fileName: a.fileName || a.name, base64: a.base64 }))
-                    .filter((a) => a.fileName && a.base64);
-                if (contactLines.length || bankLines.length || attachments.length) {
-                    const registration = { partnerType: type, header: getHeader(req.body), contactLines, bankLines, attachments };
-                    await bc.invokeAction(ENTITY, regNo, 'updateRegistration', { payload: JSON.stringify(registration) });
-                    console.log(`[create ${type}/${regNo}] payload: ${contactLines.length} contact(s), ${bankLines.length} bank(s), ${attachments.length} attachment(s)`);
+                if (contactLines.length || bankLines.length) {
+                    await bc.invokeAction(ENTITY, regNo, 'updateRegistration', {
+                        payload: JSON.stringify({ partnerType: type, header: registration.header, contactLines, bankLines }),
+                    });
                 }
-
-                return res.status(201).json({
-                    success: true,
-                    regNo,
-                    status: created.status,
-                    message: SUCCESS_MESSAGE,
-                });
+                return res.status(201).json({ success: true, regNo, status: created.status, message: SUCCESS_MESSAGE });
             } catch (err) {
                 return handleBcError(err, res, 'create', regNo);
             }

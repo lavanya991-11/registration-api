@@ -101,6 +101,32 @@ async function attachToRegistration(regNo, files) {
     return data;
 }
 
+// Call the PP Public Reg. Intake codeunit via publicRegIntake('<seed>')/Microsoft.NAV.submit.
+// This creates header + contacts + banks + ATTACHMENTS in one shot (decodes base64 into
+// the Document Attachment table). Returns the codeunit's JSON envelope.
+let seedRegNo = null;
+async function getSeedRegNo() {
+    if (seedRegNo) return seedRegNo;
+    const token = await getToken();
+    const url = `${config.bc.apiBase()}/partnerRegistrations?$top=1&$select=regNo`;
+    const { data } = await axios.get(url, { headers: { Authorization: `Bearer ${token}` }, timeout: 20000 });
+    seedRegNo = data.value?.[0]?.regNo || null;
+    return seedRegNo;
+}
+async function submitRegistration(registration) {
+    const seed = await getSeedRegNo();
+    if (!seed) throw new Error('No existing registration to seed the submit action.');
+    let data;
+    try {
+        data = await invokeAction('publicRegIntake', seed, 'submit', { payload: JSON.stringify(registration) });
+    } catch (e) {
+        seedRegNo = null; // seed may be stale — refetch next time
+        throw e;
+    }
+    const raw = data?.value ?? data;
+    try { return typeof raw === 'string' ? JSON.parse(raw) : raw; } catch { return raw; }
+}
+
 // List payment methods / payment terms from BC (code + description).
 async function listByCode(entitySet) {
     const token = await getToken();
@@ -111,4 +137,4 @@ async function listByCode(entitySet) {
 const listPaymentMethods = () => listByCode('paymentMethods');
 const listPaymentTerms = () => listByCode('paymentTerms');
 
-module.exports = { getToken, create, getById, update, invokeAction, attachToRegistration, listPostCodes, listPaymentMethods, listPaymentTerms, entityUrl };
+module.exports = { getToken, create, getById, update, invokeAction, submitRegistration, attachToRegistration, listPostCodes, listPaymentMethods, listPaymentTerms, entityUrl };

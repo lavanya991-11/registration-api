@@ -65,10 +65,16 @@ module.exports = function createController(partnerType) {
                 for (const line of validContactLines(req.body)) await bc.create(CONTACT_ENTITY, toBcContactLine(line, regNo));
                 for (const line of validBankLines(req.body)) await bc.create(BANK_ENTITY, toBcBankLine(line, regNo));
 
-                // Attachments are received (base64) but not yet forwarded to BC —
-                // that needs the Partner Reg. attachment API field schema. Logged for now.
+                // Attachments -> BC via partnerRegAttachments.attachmentsJson (non-fatal).
                 const files = Array.isArray(req.body?.attachments) ? req.body.attachments : [];
-                if (files.length) console.log(`[create ${type}/${regNo}] received ${files.length} attachment(s) — not yet sent to BC`);
+                if (files.length) {
+                    try {
+                        await bc.attachToRegistration(regNo, files);
+                        console.log(`[create ${type}/${regNo}] sent ${files.length} attachment(s) to BC`);
+                    } catch (attErr) {
+                        console.error(`[attach ${regNo}]`, attErr.response?.status, attErr.response?.data?.error?.message || attErr.message);
+                    }
+                }
 
                 return res.status(201).json({
                     success: true,

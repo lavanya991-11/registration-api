@@ -86,6 +86,21 @@ async function listPostCodes() {
     return (data.value || []).map((p) => ({ code: p.code, city: p.city, country: p.countryRegionCode }));
 }
 
+// Attach files to a registration via partnerRegAttachments.attachmentsJson
+// (a JSON array of { fileName, base64 }). BC processes it into Document Attachments.
+async function attachToRegistration(regNo, files) {
+    if (!Array.isArray(files) || files.length === 0) return;
+    const attachmentsJson = JSON.stringify(
+        files.map((f) => ({ fileName: f.fileName || f.name, base64: f.base64 }))
+    );
+    const { data } = await axios.patch(
+        entityUrl('partnerRegAttachments', regNo),
+        { attachmentsJson },
+        { headers: await authHeaders({ 'Content-Type': 'application/json', 'If-Match': '*' }), timeout: 60000 }
+    );
+    return data;
+}
+
 // List payment methods / payment terms from BC (code + description).
 async function listByCode(entitySet) {
     const token = await getToken();
@@ -96,4 +111,4 @@ async function listByCode(entitySet) {
 const listPaymentMethods = () => listByCode('paymentMethods');
 const listPaymentTerms = () => listByCode('paymentTerms');
 
-module.exports = { getToken, create, getById, update, invokeAction, listPostCodes, listPaymentMethods, listPaymentTerms, entityUrl };
+module.exports = { getToken, create, getById, update, invokeAction, attachToRegistration, listPostCodes, listPaymentMethods, listPaymentTerms, entityUrl };

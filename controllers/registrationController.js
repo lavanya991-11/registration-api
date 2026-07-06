@@ -5,10 +5,9 @@ const config = require('../config');
 const bc = require('../modules/bcClient');
 const {
     newRegNo,
+    getHeader,
     toBcPayload,
     toBcUpdatePayload,
-    toBcContactLine,
-    toBcBankLine,
     validContactLines,
     validBankLines,
     validate,
@@ -58,22 +57,22 @@ module.exports = function createController(partnerType) {
             try {
                 // If BC's No. Series isn't configured, generate a regNo so the
                 // insert doesn't require it (toggle via GENERATE_REG_NO).
+                // 1) Create the header record. (regNo generated if BC No. Series isn't set.)
                 const preRegNo = config.regNo.generate ? newRegNo(config.regNo.prefix) : undefined;
                 const created = await bc.create(ENTITY, toBcPayload(req.body, type, preRegNo));
                 regNo = created.regNo;
 
-                for (const line of validContactLines(req.body)) await bc.create(CONTACT_ENTITY, toBcContactLine(line, regNo));
-                for (const line of validBankLines(req.body)) await bc.create(BANK_ENTITY, toBcBankLine(line, regNo));
-
-                // Attachments -> BC via partnerRegAttachments.attachmentsJson (non-fatal).
-                const files = Array.isArray(req.body?.attachments) ? req.body.attachments : [];
-                if (files.length) {
-                    try {
-                        await bc.attachToRegistration(regNo, files);
-                        console.log(`[create ${type}/${regNo}] sent ${files.length} attachment(s) to BC`);
-                    } catch (attErr) {
-                        console.error(`[attach ${regNo}]`, attErr.response?.status, attErr.response?.data?.error?.message || attErr.message);
-                    }
+                // 2) Send contacts + banks + attachments as ONE payload to the
+                //    updateRegistration action; PP Partner Reg. Updater processes them all.
+                const contactLines = validContactLines(req.body);
+                const bankLines = validBankLines(req.body);
+                const attachments = (Array.isArray(req.body?.attachments) ? req.body.attachments : [])
+                    .map((a) => ({ fileName: a.fileName || a.name, base64: a.base64 }))
+                    .filter((a) => a.fileName && a.base64);
+                if (contactLines.length || bankLines.length || attachments.length) {
+                    const registration = { partnerType: type, header: getHeader(req.body), contactLines, bankLines, attachments };
+                    await bc.invokeAction(ENTITY, regNo, 'updateRegistration', { payload: JSON.stringify(registration) });
+                    console.log(`[create ${type}/${regNo}] payload: ${contactLines.length} contact(s), ${bankLines.length} bank(s), ${attachments.length} attachment(s)`);
                 }
 
                 return res.status(201).json({

@@ -144,10 +144,10 @@
             .then((d) => { if (d.success) { allPostCodes = d.postCodes; fillPostCodes(); } })
             .catch(() => {});
         if (countrySel) countrySel.addEventListener('change', fillPostCodes);
-        // Auto-fill City from the chosen post code (if City is empty).
+        // Auto-fill City from the chosen post code.
         postCodeSel.addEventListener('change', () => {
             const p = allPostCodes.find((x) => x.code === postCodeSel.value);
-            if (p && p.city && citySel && !citySel.value) citySel.value = p.city;
+            if (p && p.city && citySel) citySel.value = p.city;
         });
     }
 

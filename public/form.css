@@ -12,6 +12,13 @@
     --bg: linear-gradient(160deg, #e8eefa 0%, #f3f7fc 55%, #e9f6f0 100%);
     color-scheme: light;
 }
+/* Customer page uses an indigo accent; vendor keeps the green above. */
+body.customer {
+    --green: #6366f1;
+    --green-dark: #4f46e5;
+    --green-soft: #eceafe;
+    --green-soft2: #f5f3fe;
+}
 * { box-sizing: border-box; }
 html, body { margin: 0; }
 body {
@@ -74,7 +81,7 @@ section.block:last-of-type { border-bottom: 0; }
 }
 .inp input::placeholder { color: var(--muted); }
 .inp select:invalid { color: var(--muted); }
-.inp input:focus, .inp select:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px rgba(28, 154, 88, .13); }
+.inp input:focus, .inp select:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px color-mix(in srgb, var(--green) 16%, transparent); }
 
 /* line rows */
 .line-row { position: relative; border: 1px solid var(--border); border-radius: 11px; padding: 14px 42px 2px 14px; margin-bottom: 10px; background: #fbfdfc; }
@@ -82,7 +89,7 @@ section.block:last-of-type { border-bottom: 0; }
 .line-row .remove:hover { background: #fde2e2; color: #ef4444; }
 .line-row .field { margin-bottom: 12px; }
 .line-row input { width: 100%; padding: 9px 11px; border: 1px solid var(--border); border-radius: 8px; background: #fff; font: inherit; color: inherit; }
-.line-row input:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px rgba(28, 154, 88, .13); }
+.line-row input:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px color-mix(in srgb, var(--green) 16%, transparent); }
 .field.inline { flex-direction: row; align-items: center; gap: 8px; }
 .field.inline label { margin: 0; font-weight: 500; color: var(--text); }
 .field.inline input { width: 17px; height: 17px; accent-color: var(--green); }
@@ -108,7 +115,7 @@ section.block:last-of-type { border-bottom: 0; }
 .btn { display: inline-flex; align-items: center; gap: 7px; font: inherit; font-weight: 600; border-radius: 9px; cursor: pointer; padding: 10px 20px; font-size: .92rem; }
 .btn.cancel { background: #fff; color: #475569; border: 1px solid #d5dde5; }
 .btn.cancel:hover { background: #f7f9fb; }
-.btn.submit { background: var(--green); color: #fff; border: 0; box-shadow: 0 6px 14px rgba(28, 154, 88, .24); }
+.btn.submit { background: var(--green); color: #fff; border: 0; box-shadow: 0 6px 14px color-mix(in srgb, var(--green) 28%, transparent); }
 .btn.submit:hover { background: var(--green-dark); }
 .btn.submit:disabled { opacity: .6; cursor: not-allowed; }
 .btn svg { width: 16px; height: 16px; }

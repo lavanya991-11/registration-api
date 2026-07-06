@@ -43,12 +43,15 @@
         fileList.innerHTML = '';
         attachments.forEach((a, i) => {
             const li = document.createElement('li');
+            li.innerHTML = '<svg class="fic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>';
             const name = document.createElement('span');
-            name.textContent = `${a.name}  (${Math.round(a.size / 1024)} KB)`;
+            name.textContent = a.name;
+            const size = document.createElement('small');
+            size.textContent = `${Math.round(a.size / 1024)} KB`;
             const rm = document.createElement('button');
             rm.type = 'button'; rm.textContent = '×'; rm.title = 'Remove';
             rm.addEventListener('click', () => { attachments.splice(i, 1); renderFiles(); });
-            li.appendChild(name); li.appendChild(rm);
+            li.appendChild(name); li.appendChild(size); li.appendChild(rm);
             fileList.appendChild(li);
         });
     }

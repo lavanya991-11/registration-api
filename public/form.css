@@ -9,15 +9,15 @@
     --label: #334155;
     --muted: #94a3b8;
     --border: #e5eaf0;
-    --bg: #eef3f1;
+    --bg: linear-gradient(160deg, #e8eefa 0%, #f3f7fc 55%, #e9f6f0 100%);
     color-scheme: light;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
 body {
     font-family: "Inter", "Segoe UI", Roboto, system-ui, -apple-system, sans-serif;
-    background: var(--bg); color: var(--text); line-height: 1.45;
-    padding: 20px 16px; position: relative; overflow-x: hidden;
+    background: var(--bg); background-attachment: fixed; color: var(--text); line-height: 1.45;
+    padding: 20px 16px; position: relative; overflow-x: hidden; min-height: 100vh;
     -webkit-font-smoothing: antialiased; font-size: 14px;
 }
 .bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }

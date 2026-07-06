@@ -43,7 +43,7 @@ body {
 
 section.block { padding: 12px 0; border-bottom: 1px solid #eef1f5; }
 section.block:last-of-type { border-bottom: 0; }
-.block h2 { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; color: var(--green-dark); font-size: .95rem; font-weight: 700; letter-spacing: 0; }
+.block h2 { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; color: #3aa0e6; font-size: .95rem; font-weight: 700; letter-spacing: 0; }
 .block h2 .sec-ic { flex: 0 0 auto; width: auto; height: auto; background: none; border-radius: 0; }
 .block h2 .sec-ic svg { width: 19px; height: 19px; color: var(--green); }
 

@@ -20,7 +20,7 @@
     --danger: #e0776b;
     --radius: 16px;
     --shadow: 0 14px 40px rgba(30, 45, 70, .08);
-    color-scheme: light dark;
+    color-scheme: light;
 }
 body.vendor {
     --accent: #6366f1;
@@ -124,12 +124,4 @@ button[type="submit"]:disabled { opacity: .6; cursor: not-allowed; transform: no
     .body { padding: 4px 20px 26px; }
     .grid { grid-template-columns: 1fr; }
 }
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg: #0f141b; --card: #161c25; --text: #e7ebf0; --muted: #8b95a3; --label: #aab3c0;
-        --border: #2a323d; --field: #1c232d; --field-focus: #202834;
-        --banner-a: #16212a; --banner-b: #131d25; --banner-text: #3fd0c0; --banner-sub: #9aa4b2;
-    }
-    body.vendor { --banner-text: #a5a8fb; }
-    .line-row .remove { background: #2a323d; color: #9aa4b2; }
-}
+/* Always render the soft light theme, regardless of the device's dark-mode setting. */

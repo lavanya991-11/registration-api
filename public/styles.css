@@ -1,35 +1,35 @@
 /* Shared modern styling for the registration forms.
-   Light palette. Accent is set per page via body.customer / body.vendor. */
+   Dark theme (always on). Accent is set per page via body.customer / body.vendor. */
 :root {
     --accent: #16a394;
     --accent-2: #2ebaa9;
-    --accent-strong: #0e766b;
+    --accent-strong: #35c9b6;
     --grad: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
-    --banner-a: #ecf7f5;
-    --banner-b: #dcf0ec;
-    --banner-text: #0d6b60;
-    --banner-sub: #5b7d78;
-    --bg: #f5f6f9;
-    --card: #ffffff;
-    --text: #2b323c;
-    --muted: #8b93a1;
-    --label: #59616f;
-    --border: #e8eaf0;
-    --field: #fafbfc;
-    --field-focus: #ffffff;
-    --danger: #e0776b;
+    --banner-a: #182432;
+    --banner-b: #141e2a;
+    --banner-text: #3fd0c0;
+    --banner-sub: #9aa4b2;
+    --bg: #0d1420;
+    --card: #131b26;
+    --text: #e7ebf0;
+    --muted: #8b95a3;
+    --label: #aab3c0;
+    --border: #28303c;
+    --field: #172029;
+    --field-focus: #1c2733;
+    --danger: #f28b82;
     --radius: 16px;
-    --shadow: 0 14px 40px rgba(30, 45, 70, .08);
-    color-scheme: light;
+    --shadow: 0 18px 50px rgba(0, 0, 0, .35);
+    color-scheme: dark;
 }
 body.vendor {
     --accent: #6366f1;
     --accent-2: #8183f6;
-    --accent-strong: #4f46e5;
-    --banner-a: #eef0fe;
-    --banner-b: #e4e6fd;
-    --banner-text: #4338ca;
-    --banner-sub: #6b6f95;
+    --accent-strong: #a5a8fb;
+    --banner-a: #1a1f36;
+    --banner-b: #161a2e;
+    --banner-text: #a5a8fb;
+    --banner-sub: #8b90b5;
 }
 
 * { box-sizing: border-box; }
@@ -78,7 +78,7 @@ section.block:last-of-type { border-bottom: 0; }
 .field input::placeholder { color: var(--muted); }
 .field input:focus {
     outline: none; border-color: var(--accent); background: var(--field-focus);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
 }
 .field.inline { justify-content: flex-end; }
 .field.inline label { display: flex; align-items: center; gap: 8px; margin: 0; font-weight: 500; color: var(--text); }
@@ -90,10 +90,10 @@ section.block:last-of-type { border-bottom: 0; }
 }
 .line-row .remove {
     position: absolute; top: 12px; right: 12px; width: 28px; height: 28px;
-    border: 0; border-radius: 8px; background: #eef1f6; color: #8a94a3;
+    border: 0; border-radius: 8px; background: #242c38; color: #9aa4b2;
     cursor: pointer; font-size: 1.1rem; line-height: 1;
 }
-.line-row .remove:hover { background: #fce4e4; color: var(--danger); }
+.line-row .remove:hover { background: #3a2530; color: var(--danger); }
 
 .add {
     display: inline-flex; align-items: center; gap: 6px;
@@ -101,14 +101,14 @@ section.block:last-of-type { border-bottom: 0; }
     padding: 9px 15px; border-radius: 9px; font: inherit; font-weight: 600; cursor: pointer;
     transition: background .12s;
 }
-.add:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+.add:hover { background: color-mix(in srgb, var(--accent) 14%, transparent); }
 
 .actions { padding-top: 26px; }
 button[type="submit"] {
     width: 100%; padding: 14px; border: 0; border-radius: 11px;
     background: var(--grad); color: #fff; font: inherit; font-weight: 700; font-size: 1.05rem;
     cursor: pointer; transition: transform .08s, opacity .12s;
-    box-shadow: 0 8px 20px color-mix(in srgb, var(--accent) 34%, transparent);
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--accent) 45%, transparent);
 }
 button[type="submit"]:hover { transform: translateY(-1px); }
 button[type="submit"]:disabled { opacity: .6; cursor: not-allowed; transform: none; }
@@ -124,4 +124,3 @@ button[type="submit"]:disabled { opacity: .6; cursor: not-allowed; transform: no
     .body { padding: 4px 20px 26px; }
     .grid { grid-template-columns: 1fr; }
 }
-/* Always render the soft light theme, regardless of the device's dark-mode setting. */

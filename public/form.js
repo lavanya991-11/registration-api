@@ -34,6 +34,43 @@
         btn.addEventListener('click', () => addRow(btn.dataset.add))
     );
 
+    // ---- Attachments (optional) ----
+    const fileInput = document.getElementById('attachments');
+    const fileList = document.getElementById('fileList');
+    const attachments = [];
+    function renderFiles() {
+        if (!fileList) return;
+        fileList.innerHTML = '';
+        attachments.forEach((a, i) => {
+            const li = document.createElement('li');
+            const name = document.createElement('span');
+            name.textContent = `${a.name}  (${Math.round(a.size / 1024)} KB)`;
+            const rm = document.createElement('button');
+            rm.type = 'button'; rm.textContent = '×'; rm.title = 'Remove';
+            rm.addEventListener('click', () => { attachments.splice(i, 1); renderFiles(); });
+            li.appendChild(name); li.appendChild(rm);
+            fileList.appendChild(li);
+        });
+    }
+    function readAsBase64(file) {
+        return new Promise((resolve, reject) => {
+            const r = new FileReader();
+            r.onload = () => resolve(String(r.result).split(',')[1]);
+            r.onerror = reject;
+            r.readAsDataURL(file);
+        });
+    }
+    if (fileInput) {
+        fileInput.addEventListener('change', async () => {
+            for (const f of Array.from(fileInput.files)) {
+                if (f.size > 5 * 1024 * 1024) { alert(`${f.name} exceeds 5 MB and was skipped.`); continue; }
+                attachments.push({ name: f.name, contentType: f.type, size: f.size, base64: await readAsBase64(f) });
+            }
+            fileInput.value = '';
+            renderFiles();
+        });
+    }
+
     function collectLines(kind) {
         const lines = [];
         document.querySelectorAll(`#${kind}s .line-row`).forEach((row) => {
@@ -99,6 +136,9 @@
 
         const header = collectHeader();
         const body = { header, contactLines: collectLines('contact'), bankLines: collectLines('bank') };
+        if (!isEdit && attachments.length) {
+            body.attachments = attachments.map((a) => ({ name: a.name, contentType: a.contentType, base64: a.base64 }));
+        }
         // docNo link -> submit via the BC bound action; otherwise create.
         const url = isEdit ? submitUrl() : base;
         const method = 'POST';
@@ -118,6 +158,7 @@
                     msg.textContent = `${data.message || 'Your registration has been submitted.'} (Ref: ${data.regNo || '—'})`;
                     form.reset();
                     document.querySelectorAll('#contacts .line-row, #banks .line-row').forEach((r) => r.remove());
+                    attachments.length = 0; renderFiles();
                 }
             } else {
                 msg.textContent = data.message || 'Submission failed. Please try again.';

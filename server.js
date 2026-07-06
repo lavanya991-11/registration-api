@@ -10,7 +10,7 @@ const app = express();
 
 // ---- Global middleware ----
 app.use(cors());
-app.use(express.json({ limit: '256kb' }));
+app.use(express.json({ limit: '30mb' })); // allow base64 attachment uploads
 
 // ---- Static registration forms (customer.html / vendor.html) ----
 app.use(express.static(path.join(__dirname, 'public')));

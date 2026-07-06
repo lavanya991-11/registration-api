@@ -4,103 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vendor Registration</title>
-    <style>
-        :root {
-            --g: #7c3aed; --g-dark: #6d28d9; --g-soft: #ede9fe; --g-soft2: #f5f2fe;
-            --text: #1e293b; --label: #334155; --muted: #97a0b0; --border: #e7e6f0;
-            color-scheme: light;
-        }
-        * { box-sizing: border-box; }
-        html, body { margin: 0; }
-        body {
-            font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-            background: #f1f0fa; color: var(--text); line-height: 1.5;
-            padding: 28px 18px; position: relative; overflow-x: hidden;
-        }
-        .bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-        .blob { position: absolute; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #ddd8f7, #e9e6fb 70%); opacity: .6; filter: blur(4px); }
-        .blob.a { width: 300px; height: 300px; left: -110px; bottom: -100px; }
-        .blob.b { width: 260px; height: 260px; right: -90px; top: 40px; opacity: .5; }
-        .dots { position: absolute; width: 120px; height: 90px; opacity: .5;
-            background-image: radial-gradient(#c7c4ea 1.5px, transparent 1.5px); background-size: 16px 16px; }
-        .dots.tl { top: 30px; left: 30px; }
-        .dots.br { bottom: 40px; right: 40px; }
-
-        .card {
-            position: relative; z-index: 1; background: #fff; margin: 0 auto;
-            max-width: 940px; border-radius: 22px; overflow: hidden;
-            box-shadow: 0 26px 60px rgba(50, 40, 90, .12);
-        }
-
-        .banner { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 26px 40px 22px; border-bottom: 1px solid var(--border); }
-        .banner-left { display: flex; align-items: center; gap: 18px; }
-        .hero-badge { flex: 0 0 auto; width: 58px; height: 58px; border-radius: 50%; background: var(--g-soft); color: var(--g); display: flex; align-items: center; justify-content: center; }
-        .hero-badge svg { width: 28px; height: 28px; }
-        .banner h1 { margin: 0; font-size: 1.9rem; font-weight: 800; letter-spacing: -.02em; color: #142033; }
-        .banner .sub { margin: 5px 0 0; color: #64748b; font-size: .98rem; }
-        .banner .sub b { color: #ef4444; }
-        .hero-illus { flex: 0 0 auto; width: 92px; height: 92px; border-radius: 50%; background: var(--g-soft2); position: relative; display: flex; align-items: center; justify-content: center; }
-        .hero-illus svg { width: 40px; height: 40px; color: #9d93c9; }
-        .hero-illus .check { position: absolute; right: 8px; bottom: 10px; width: 24px; height: 24px; border-radius: 50%; background: var(--g); color: #fff; display: flex; align-items: center; justify-content: center; }
-        .hero-illus .check svg { width: 14px; height: 14px; color: #fff; }
-
-        .body { padding: 8px 40px 30px; }
-
-        section.block { padding: 24px 0; border-bottom: 1px solid #eeecf5; }
-        section.block:last-of-type { border-bottom: 0; }
-        .block h2 { display: flex; align-items: center; gap: 12px; margin: 0 0 20px; color: var(--g); font-size: .82rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
-        .block h2 .sec-ic { flex: 0 0 auto; width: 32px; height: 32px; border-radius: 9px; background: var(--g-soft); display: flex; align-items: center; justify-content: center; }
-        .block h2 .sec-ic svg { width: 17px; height: 17px; color: var(--g); }
-        .block h2::after { content: ""; flex: 1; height: 1px; background: #ece9f4; }
-
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px 22px; }
-        .field { display: flex; flex-direction: column; min-width: 0; }
-        .field.full { grid-column: 1 / -1; }
-        .field label { font-size: .88rem; font-weight: 700; color: var(--label); margin-bottom: 8px; }
-        .field label b { color: #ef4444; font-weight: 700; }
-        .inp { position: relative; }
-        .inp .ic { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--g); pointer-events: none; }
-        .inp input {
-            width: 100%; padding: 12px 14px 12px 40px; border: 1px solid var(--border); border-radius: 10px;
-            background: #fff; font: inherit; color: inherit; transition: border-color .15s, box-shadow .15s;
-        }
-        .inp input::placeholder { color: var(--muted); }
-        .inp input:focus { outline: none; border-color: var(--g); box-shadow: 0 0 0 3px rgba(124, 58, 237, .14); }
-
-        .line-row { position: relative; border: 1px solid var(--border); border-radius: 12px; padding: 16px 44px 4px 16px; margin-bottom: 12px; background: #fcfbfe; }
-        .line-row .remove { position: absolute; top: 12px; right: 12px; width: 28px; height: 28px; border: 0; border-radius: 8px; background: #efedf6; color: #97a0b0; cursor: pointer; font-size: 1.1rem; line-height: 1; }
-        .line-row .remove:hover { background: #fde2e2; color: #ef4444; }
-        .line-row .field { margin-bottom: 12px; }
-        .line-row input { width: 100%; padding: 11px 13px; border: 1px solid var(--border); border-radius: 9px; background: #fff; font: inherit; color: inherit; }
-        .line-row input:focus { outline: none; border-color: var(--g); box-shadow: 0 0 0 3px rgba(124, 58, 237, .14); }
-        .field.inline { flex-direction: row; align-items: center; gap: 8px; }
-        .field.inline label { margin: 0; font-weight: 500; color: var(--text); }
-        .field.inline input { width: 18px; height: 18px; accent-color: var(--g); }
-        .add { display: inline-flex; align-items: center; gap: 6px; background: transparent; color: var(--g-dark); border: 1px dashed var(--g); padding: 9px 15px; border-radius: 9px; font: inherit; font-weight: 600; cursor: pointer; }
-        .add:hover { background: var(--g-soft2); }
-
-        #msg { text-align: center; font-weight: 600; margin-top: 16px; min-height: 1.1em; }
-        #msg.ok { color: var(--g-dark); } #msg.err { color: #dc2626; }
-
-        .footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 40px; background: #f1eefb; border-top: 1px solid var(--border); }
-        .btn { display: inline-flex; align-items: center; gap: 8px; font: inherit; font-weight: 700; border-radius: 10px; cursor: pointer; padding: 12px 22px; }
-        .btn.cancel { background: #fff; color: #475569; border: 1px solid #d8d5e5; }
-        .btn.cancel:hover { background: #f8f7fb; }
-        .btn.continue { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: #fff; border: 0; box-shadow: 0 8px 18px rgba(124, 58, 237, .32); }
-        .btn.continue:hover { filter: brightness(1.05); }
-        .btn.continue:disabled { opacity: .6; cursor: not-allowed; }
-        .btn svg { width: 18px; height: 18px; }
-
-        @media (max-width: 640px) {
-            body { padding: 0; }
-            .card { border-radius: 0; }
-            .banner { padding: 22px 20px; flex-wrap: wrap; }
-            .hero-illus { display: none; }
-            .body { padding: 4px 20px 24px; }
-            .footer { padding: 16px 20px; }
-            .grid { grid-template-columns: 1fr; }
-        }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="form.css" />
 </head>
 <body>
     <div class="bg"><span class="blob a"></span><span class="blob b"></span><span class="dots tl"></span><span class="dots br"></span></div>
@@ -117,7 +24,7 @@
                 </div>
             </div>
             <div class="hero-illus">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="2" /><path d="M9 4V3h6v1M9 10h6M9 14h4" /></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" /><path d="M14 3v5h5M8 13h6M8 17h5" /></svg>
                 <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7" /></svg></span>
             </div>
         </div>
@@ -164,11 +71,11 @@
                             </div>
                             <div class="field">
                                 <label>Type of Entity</label>
-                                <div class="inp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg><input name="entityType" placeholder="e.g. LLC, FZE, Partnership" /></div>
+                                <div class="inp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg><select name="entityType" data-options="entity" data-placeholder="Select entity type"></select></div>
                             </div>
                             <div class="field">
                                 <label>Country of Incorporation</label>
-                                <div class="inp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z" /></svg><input name="countryOfIncorporation" placeholder="Enter country of incorporation" /></div>
+                                <div class="inp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z" /></svg><select name="countryOfIncorporation" data-options="country" data-placeholder="Select country"></select></div>
                             </div>
                             <div class="field">
                                 <label>Place of Registration</label>
@@ -201,8 +108,22 @@
                                 <div class="inp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18" /></svg><input name="postCode" placeholder="Enter post code" /></div>
                             </div>
                             <div class="field">
-                                <label>Country/Region Code <b>*</b></label>
-                                <div class="inp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z" /></svg><input name="countryRegionCode" placeholder="e.g. AE" required /></div>
+                                <label>Country/Region <b>*</b></label>
+                                <div class="inp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z" /></svg><select name="countryRegionCode" data-options="country" data-placeholder="Select country" required></select></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="block">
+                        <h2><span class="sec-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 12 12 20.6a2 2 0 0 1-2.8 0l-6.6-6.6a2 2 0 0 1 0-2.8L9.4 3H19a2 2 0 0 1 2 2v9z" /><circle cx="15.5" cy="8.5" r="1.2" /></svg></span>Commercial Details</h2>
+                        <div class="grid">
+                            <div class="field">
+                                <label>Currency</label>
+                                <div class="inp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v10M9.5 9.5a2.5 2 0 0 1 5 0c0 2.5-5 1.5-5 4a2.5 2 0 0 0 5 0" /></svg><select name="currencyCode" data-options="currency" data-placeholder="Select currency"></select></div>
+                            </div>
+                            <div class="field">
+                                <label>Partner Category</label>
+                                <div class="inp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 12 12 20.6a2 2 0 0 1-2.8 0l-6.6-6.6a2 2 0 0 1 0-2.8L9.4 3H19a2 2 0 0 1 2 2v9z" /><circle cx="15.5" cy="8.5" r="1.2" /></svg><select name="partnerCategory" data-options="category" data-placeholder="Select category"></select></div>
                             </div>
                         </div>
                     </section>
@@ -220,12 +141,26 @@
                     <button type="button" class="add" data-add="bank">+ Add bank account</button>
                 </section>
 
+                <section class="block">
+                    <h2><span class="sec-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.5 12.5 21a4.5 4.5 0 0 1-6.4-6.4l8.5-8.5a3 3 0 0 1 4.2 4.2l-8.5 8.5a1.5 1.5 0 0 1-2.1-2.1l7.8-7.8" /></svg></span>Attachments</h2>
+                    <input type="file" id="attachments" multiple hidden />
+                    <label for="attachments" class="upload-drop">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M8 7l4-4 4 4" /><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4" /></svg>
+                        <span>Click to upload documents</span>
+                        <small>Trade license, VAT certificate, etc. &mdash; PDF, JPG, PNG up to 5 MB each</small>
+                    </label>
+                    <ul id="fileList" class="file-list"></ul>
+                </section>
+
                 <div id="msg"></div>
             </div>
 
             <div class="footer">
                 <button type="button" class="btn cancel" onclick="window.location.href='/'">Cancel</button>
-                <button type="submit" class="btn continue">Continue <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7" /></svg></button>
+                <button type="submit" class="btn submit">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+                    Submit Registration
+                </button>
             </div>
         </form>
     </div>
@@ -258,6 +193,7 @@
     </template>
 
     <script>window.SUBMIT_URL = '/api/vendor';</script>
+    <script src="options.js"></script>
     <script src="form.js"></script>
 </body>
 </html>

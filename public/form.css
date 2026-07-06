@@ -1,10 +1,10 @@
 /* Shared styling for the customer & vendor registration forms.
    Clean, flat, multi-column layout (green accent). */
 :root {
-    --green: #1c9a58;
-    --green-dark: #15803d;
-    --green-soft: #e7f6ee;
-    --green-soft2: #f1faf5;
+    --green: #6366f1;
+    --green-dark: #4f46e5;
+    --green-soft: #eceafe;
+    --green-soft2: #f5f3fe;
     --text: #1e293b;
     --heading: #0f1b2d;
     --label: #475569;

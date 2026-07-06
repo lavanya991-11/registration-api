@@ -17,6 +17,7 @@
     color-scheme: light;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; } /* ensure hidden wins over .btn/.step display rules */
 html, body { margin: 0; }
 body {
     font-family: "Inter", "Segoe UI", Roboto, system-ui, -apple-system, sans-serif;

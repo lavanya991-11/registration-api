@@ -78,4 +78,12 @@ async function invokeAction(entitySet, key, action, args = {}) {
     return data;
 }
 
-module.exports = { getToken, create, getById, update, invokeAction, entityUrl };
+// List post codes from BC (for the Post Code dropdown).
+async function listPostCodes() {
+    const token = await getToken();
+    const url = `${config.bc.apiBase()}/postCodes?$top=5000&$select=code,city,countryRegionCode`;
+    const { data } = await axios.get(url, { headers: { Authorization: `Bearer ${token}` }, timeout: 30000 });
+    return (data.value || []).map((p) => ({ code: p.code, city: p.city, country: p.countryRegionCode }));
+}
+
+module.exports = { getToken, create, getById, update, invokeAction, listPostCodes, entityUrl };

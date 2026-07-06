@@ -98,6 +98,34 @@
         return header;
     }
 
+    // ---- Post codes (loaded from BC, filtered by the selected Country/Region) ----
+    const postCodeSel = form.elements['postCode'];
+    const countrySel = form.elements['countryRegionCode'];
+    const citySel = form.elements['city'];
+    let allPostCodes = [];
+    function fillPostCodes() {
+        if (!postCodeSel || postCodeSel.tagName !== 'SELECT') return;
+        const country = countrySel ? countrySel.value : '';
+        const list = country ? allPostCodes.filter((p) => p.country === country) : [];
+        const current = postCodeSel.value;
+        const ph = country ? 'Select post code' : 'Select country first';
+        postCodeSel.innerHTML = `<option value="">${ph}</option>` +
+            list.map((p) => `<option value="${p.code}">${p.code}${p.city ? ' — ' + p.city : ''}</option>`).join('');
+        if (current) postCodeSel.value = current;
+    }
+    if (postCodeSel && postCodeSel.tagName === 'SELECT') {
+        fetch('/api/meta/postcodes')
+            .then((r) => r.json())
+            .then((d) => { if (d.success) { allPostCodes = d.postCodes; fillPostCodes(); } })
+            .catch(() => {});
+        if (countrySel) countrySel.addEventListener('change', fillPostCodes);
+        // Auto-fill City from the chosen post code (if City is empty).
+        postCodeSel.addEventListener('change', () => {
+            const p = allPostCodes.find((x) => x.code === postCodeSel.value);
+            if (p && p.city && citySel && !citySel.value) citySel.value = p.city;
+        });
+    }
+
     // ---- Edit mode: load the existing registration and prefill the header ----
     function setInput(name, value) {
         const el = form.elements[name];

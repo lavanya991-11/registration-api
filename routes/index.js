@@ -3,6 +3,7 @@ const express = require('express');
 
 const router = express.Router();
 
+router.use('/meta', require('./metaRoutes'));
 router.use('/registration', require('./registrationRoutes'));
 router.use('/customer', require('./customerRoutes'));
 router.use('/vendor', require('./vendorRoutes'));

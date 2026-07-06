@@ -190,7 +190,7 @@
         const header = collectHeader();
         const body = { header, contactLines: collectLines('contact'), bankLines: collectLines('bank') };
         if (!isEdit && attachments.length) {
-            body.attachments = attachments.map((a) => ({ name: a.name, contentType: a.contentType, base64: a.base64 }));
+            body.attachments = attachments.map((a) => ({ fileName: a.name, base64: a.base64 }));
         }
         // docNo link -> submit via the BC bound action; otherwise create.
         const url = isEdit ? submitUrl() : base;

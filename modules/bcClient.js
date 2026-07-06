@@ -86,4 +86,14 @@ async function listPostCodes() {
     return (data.value || []).map((p) => ({ code: p.code, city: p.city, country: p.countryRegionCode }));
 }
 
-module.exports = { getToken, create, getById, update, invokeAction, listPostCodes, entityUrl };
+// List payment methods / payment terms from BC (code + description).
+async function listByCode(entitySet) {
+    const token = await getToken();
+    const url = `${config.bc.apiBase()}/${entitySet}?$select=code,description&$top=500`;
+    const { data } = await axios.get(url, { headers: { Authorization: `Bearer ${token}` }, timeout: 30000 });
+    return (data.value || []).map((p) => ({ code: p.code, description: p.description }));
+}
+const listPaymentMethods = () => listByCode('paymentMethods');
+const listPaymentTerms = () => listByCode('paymentTerms');
+
+module.exports = { getToken, create, getById, update, invokeAction, listPostCodes, listPaymentMethods, listPaymentTerms, entityUrl };

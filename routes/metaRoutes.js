@@ -24,4 +24,22 @@ router.get('/postcodes', rateLimit, async (req, res) => {
     }
 });
 
+// Generic 1-hour cached list endpoint.
+function cachedList(fn) {
+    let data = null;
+    let at = 0;
+    return async (_req, res) => {
+        try {
+            if (!data || Date.now() - at > TTL) { data = await fn(); at = Date.now(); }
+            res.json({ success: true, items: data });
+        } catch (err) {
+            console.error('[meta]', err.response?.status, err.message);
+            res.status(502).json({ success: false, errorCode: 'BC_ERROR', message: 'Could not load options.' });
+        }
+    };
+}
+
+router.get('/payment-methods', rateLimit, cachedList(bc.listPaymentMethods));
+router.get('/payment-terms', rateLimit, cachedList(bc.listPaymentTerms));
+
 module.exports = router;

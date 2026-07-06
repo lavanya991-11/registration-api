@@ -98,6 +98,21 @@
         return header;
     }
 
+    // ---- Selects populated from a BC-backed endpoint (payment terms / methods) ----
+    document.querySelectorAll('select[data-src]').forEach((sel) => {
+        const ph = sel.dataset.placeholder || 'Select';
+        fetch(sel.dataset.src)
+            .then((r) => r.json())
+            .then((d) => {
+                if (!d.success || !Array.isArray(d.items)) return;
+                const current = sel.value;
+                sel.innerHTML = `<option value="">${ph}</option>` +
+                    d.items.map((i) => `<option value="${i.code}">${i.description || i.code}</option>`).join('');
+                if (current) sel.value = current;
+            })
+            .catch(() => {});
+    });
+
     // ---- Post codes (loaded from BC, filtered by the selected Country/Region) ----
     const postCodeSel = form.elements['postCode'];
     const countrySel = form.elements['countryRegionCode'];

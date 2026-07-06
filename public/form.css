@@ -25,7 +25,7 @@ body {
 
 .card {
     position: relative; z-index: 1; background: #fff; margin: 0 auto;
-    max-width: 1000px; border-radius: 14px; overflow: hidden;
+    max-width: 820px; border-radius: 14px; overflow: hidden;
     border: 1px solid var(--border); box-shadow: 0 8px 26px rgba(30, 50, 70, .06);
 }
 

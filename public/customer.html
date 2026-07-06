@@ -4,82 +4,243 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Customer Registration</title>
-    <link rel="stylesheet" href="styles.css" />
+    <style>
+        :root {
+            --g: #16a34a; --g-dark: #15803d; --g-soft: #e7f5ec; --g-soft2: #f0faf4;
+            --text: #1e293b; --label: #334155; --muted: #94a3b8; --border: #e5eaf0;
+            color-scheme: light;
+        }
+        * { box-sizing: border-box; }
+        html, body { margin: 0; }
+        body {
+            font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+            background: #eef3f1; color: var(--text); line-height: 1.5;
+            padding: 28px 18px; position: relative; overflow-x: hidden;
+        }
+        .bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .blob { position: absolute; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #d6efe0, #e6f5ec 70%); opacity: .6; filter: blur(4px); }
+        .blob.a { width: 300px; height: 300px; left: -110px; bottom: -100px; }
+        .blob.b { width: 260px; height: 260px; right: -90px; top: 40px; opacity: .5; }
+        .dots { position: absolute; width: 120px; height: 90px; opacity: .5;
+            background-image: radial-gradient(#bcd9c8 1.5px, transparent 1.5px); background-size: 16px 16px; }
+        .dots.tl { top: 30px; left: 30px; }
+        .dots.br { bottom: 40px; right: 40px; }
+
+        .card {
+            position: relative; z-index: 1; background: #fff; margin: 0 auto;
+            max-width: 940px; border-radius: 22px; overflow: hidden;
+            box-shadow: 0 26px 60px rgba(30, 60, 45, .12);
+        }
+
+        /* header */
+        .banner { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 26px 40px 22px; border-bottom: 1px solid var(--border); }
+        .banner-left { display: flex; align-items: center; gap: 18px; }
+        .hero-badge { flex: 0 0 auto; width: 58px; height: 58px; border-radius: 50%; background: var(--g-soft); color: var(--g); display: flex; align-items: center; justify-content: center; }
+        .hero-badge svg { width: 28px; height: 28px; }
+        .banner h1 { margin: 0; font-size: 1.9rem; font-weight: 800; letter-spacing: -.02em; color: #142033; }
+        .banner .sub { margin: 5px 0 0; color: #64748b; font-size: .98rem; }
+        .banner .sub b { color: #ef4444; }
+        .hero-illus { flex: 0 0 auto; width: 92px; height: 92px; border-radius: 50%; background: var(--g-soft2); position: relative; display: flex; align-items: center; justify-content: center; }
+        .hero-illus svg { width: 40px; height: 40px; color: #8aa79a; }
+        .hero-illus .check { position: absolute; left: 8px; bottom: 8px; width: 22px; height: 22px; border-radius: 50%; background: var(--g); color: #fff; display: flex; align-items: center; justify-content: center; }
+        .hero-illus .check svg { width: 13px; height: 13px; color: #fff; }
+
+        .body { padding: 8px 40px 30px; }
+
+        section.block { padding: 24px 0; border-bottom: 1px solid #eef2f5; }
+        section.block:last-of-type { border-bottom: 0; }
+        .block h2 { display: flex; align-items: center; gap: 12px; margin: 0 0 20px; color: var(--g); font-size: .82rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
+        .block h2 .sec-ic { flex: 0 0 auto; width: 32px; height: 32px; border-radius: 9px; background: var(--g-soft); display: flex; align-items: center; justify-content: center; }
+        .block h2 .sec-ic svg { width: 17px; height: 17px; color: var(--g); }
+        .block h2::after { content: ""; flex: 1; height: 1px; background: #e9eef2; }
+
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px 22px; }
+        .field { display: flex; flex-direction: column; min-width: 0; }
+        .field.full { grid-column: 1 / -1; }
+        .field label { font-size: .88rem; font-weight: 700; color: var(--label); margin-bottom: 8px; }
+        .field label b { color: #ef4444; font-weight: 700; }
+        .inp { position: relative; }
+        .inp .ic { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--g); pointer-events: none; }
+        .inp input {
+            width: 100%; padding: 12px 14px 12px 40px; border: 1px solid var(--border); border-radius: 10px;
+            background: #fff; font: inherit; color: inherit; transition: border-color .15s, box-shadow .15s;
+        }
+        .inp input::placeholder { color: var(--muted); }
+        .inp input:focus { outline: none; border-color: var(--g); box-shadow: 0 0 0 3px rgba(22, 163, 74, .13); }
+
+        /* line rows */
+        .line-row { position: relative; border: 1px solid var(--border); border-radius: 12px; padding: 16px 44px 4px 16px; margin-bottom: 12px; background: #fbfdfc; }
+        .line-row .remove { position: absolute; top: 12px; right: 12px; width: 28px; height: 28px; border: 0; border-radius: 8px; background: #eef2f0; color: #94a3b8; cursor: pointer; font-size: 1.1rem; line-height: 1; }
+        .line-row .remove:hover { background: #fde2e2; color: #ef4444; }
+        .line-row .field { margin-bottom: 12px; }
+        .line-row input { width: 100%; padding: 11px 13px; border: 1px solid var(--border); border-radius: 9px; background: #fff; font: inherit; color: inherit; }
+        .line-row input:focus { outline: none; border-color: var(--g); box-shadow: 0 0 0 3px rgba(22, 163, 74, .13); }
+        .field.inline { flex-direction: row; align-items: center; gap: 8px; }
+        .field.inline label { margin: 0; font-weight: 500; color: var(--text); }
+        .field.inline input { width: 18px; height: 18px; accent-color: var(--g); }
+        .add { display: inline-flex; align-items: center; gap: 6px; background: transparent; color: var(--g-dark); border: 1px dashed var(--g); padding: 9px 15px; border-radius: 9px; font: inherit; font-weight: 600; cursor: pointer; }
+        .add:hover { background: var(--g-soft2); }
+
+        #msg { text-align: center; font-weight: 600; margin-top: 16px; min-height: 1.1em; }
+        #msg.ok { color: var(--g-dark); } #msg.err { color: #dc2626; }
+
+        /* footer */
+        .footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 40px; background: #eef4f0; border-top: 1px solid var(--border); }
+        .btn { display: inline-flex; align-items: center; gap: 8px; font: inherit; font-weight: 700; border-radius: 10px; cursor: pointer; padding: 12px 22px; }
+        .btn.cancel { background: #fff; color: #475569; border: 1px solid #d5dde5; }
+        .btn.cancel:hover { background: #f7f9fb; }
+        .btn.continue { background: var(--g); color: #fff; border: 0; box-shadow: 0 8px 18px rgba(22, 163, 74, .28); }
+        .btn.continue:hover { background: var(--g-dark); }
+        .btn.continue:disabled { opacity: .6; cursor: not-allowed; }
+        .btn svg { width: 18px; height: 18px; }
+
+        @media (max-width: 640px) {
+            body { padding: 0; }
+            .card { border-radius: 0; }
+            .banner { padding: 22px 20px; flex-wrap: wrap; }
+            .hero-illus { display: none; }
+            .body { padding: 4px 20px 24px; }
+            .footer { padding: 16px 20px; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
-<body class="customer">
-    <div class="wrap">
-        <div class="card">
-            <div class="banner">
-                <h1>Customer Registration</h1>
-                <p>Complete the form below to register as a customer. Fields marked * are required.</p>
+<body>
+    <div class="bg"><span class="blob a"></span><span class="blob b"></span><span class="dots tl"></span><span class="dots br"></span></div>
+
+    <div class="card">
+        <div class="banner">
+            <div class="banner-left">
+                <div class="hero-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="m16 11 2 2 4-4" /></svg>
+                </div>
+                <div>
+                    <h1>Customer Registration</h1>
+                    <p class="sub">Complete the form below to register as a customer. Fields marked <b>*</b> are required.</p>
+                </div>
             </div>
-            <div class="body">
-                <form id="form">
-                    <div id="headerSection">
-                        <section class="block">
-                            <h2>Company Information</h2>
-                            <div class="grid">
-                                <div class="field full"><label class="req">Trade Name</label><input name="tradeName" required /></div>
-                                <div class="field"><label class="req">Email</label><input name="partnerEmail" type="email" required /></div>
-                                <div class="field"><label>Phone No.</label><input name="phoneNo" /></div>
-                                <div class="field full"><label>Website</label><input name="website" /></div>
-                            </div>
-                        </section>
-
-                        <section class="block">
-                            <h2>Registration Details</h2>
-                            <div class="grid">
-                                <div class="field"><label>Trade License Number</label><input name="tradeLicenseNumber" /></div>
-                                <div class="field"><label>Trade License Expiry Date</label><input name="tradeLicenseExpiryDate" type="date" /></div>
-                                <div class="field"><label>Company Registration Number</label><input name="companyRegNumber" /></div>
-                                <div class="field"><label>Type of Entity</label><input name="entityType" /></div>
-                                <div class="field"><label>Country of Incorporation</label><input name="countryOfIncorporation" /></div>
-                                <div class="field"><label>Place of Registration</label><input name="placeOfRegistration" /></div>
-                                <div class="field full"><label>VAT Registration No.</label><input name="vatRegistrationNo" /></div>
-                            </div>
-                        </section>
-
-                        <section class="block">
-                            <h2>Address</h2>
-                            <div class="grid">
-                                <div class="field full"><label>Address</label><input name="address" /></div>
-                                <div class="field full"><label>Address 2</label><input name="address2" /></div>
-                                <div class="field"><label>City</label><input name="city" /></div>
-                                <div class="field"><label>Post Code</label><input name="postCode" /></div>
-                                <div class="field"><label class="req">Country/Region Code</label><input name="countryRegionCode" required /></div>
-                            </div>
-                        </section>
-                    </div>
-
-                    <section class="block">
-                        <h2>Contacts</h2>
-                        <div id="contacts"></div>
-                        <button type="button" class="add" data-add="contact">+ Add contact</button>
-                    </section>
-
-                    <section class="block">
-                        <h2>Bank Accounts</h2>
-                        <div id="banks"></div>
-                        <button type="button" class="add" data-add="bank">+ Add bank account</button>
-                    </section>
-
-                    <div class="actions">
-                        <button type="submit">Submit Registration</button>
-                    </div>
-                </form>
-                <div id="msg"></div>
+            <div class="hero-illus">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" /><path d="M14 3v5h5M8 13h6M8 17h5" /></svg>
+                <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7" /></svg></span>
             </div>
         </div>
+
+        <form id="form">
+            <div class="body">
+                <div id="headerSection">
+                    <section class="block">
+                        <h2><span class="sec-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5" /><path d="M9 8h.01M9 12h.01M9 16h.01M15 8h.01M15 12h.01M15 16h.01" /></svg></span>Company Information</h2>
+                        <div class="grid">
+                            <div class="field full">
+                                <label>Trade Name <b>*</b></label>
+                                <div class="inp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5" /><path d="M9 8h.01M9 12h.01M9 16h.01M15 8h.01M15 12h.01M15 16h.01" /></svg><input name="tradeName" placeholder="Enter your trade name" required /></div>
+                            </div>
+                            <div class="field">
+                                <label>Email <b>*</b></label>
+                                <div class="inp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" /></svg><input name="partnerEmail" type="email" placeholder="Enter your email address" required /></div>
+                            </div>
+                            <div class="field">
+                                <label>Phone No.</label>
+                                <div class="inp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.5 2.1L8.1 9.6a16 16 0 0 0 6 6l1.2-1.1a2 2 0 0 1 2.1-.5c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z" /></svg><input name="phoneNo" placeholder="Enter your phone number" /></div>
+                            </div>
+                            <div class="field full">
+                                <label>Website</label>
+                                <div class="inp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z" /></svg><input name="website" placeholder="Enter your website (optional)" /></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="block">
+                        <h2><span class="sec-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z" /><path d="m9 12 2 2 4-4" /></svg></span>Registration Details</h2>
+                        <div class="grid">
+                            <div class="field">
+                                <label>Trade License Number</label>
+                                <div class="inp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" /><path d="M14 3v6h6M8 13h8M8 17h6" /></svg><input name="tradeLicenseNumber" placeholder="Enter trade license number" /></div>
+                            </div>
+                            <div class="field">
+                                <label>Trade License Expiry Date</label>
+                                <div class="inp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M3 9h18M8 2v4M16 2v4" /></svg><input name="tradeLicenseExpiryDate" type="date" /></div>
+                            </div>
+                            <div class="field">
+                                <label>Company Registration Number</label>
+                                <div class="inp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" /><path d="M14 3v6h6M8 13h8M8 17h6" /></svg><input name="companyRegNumber" placeholder="Enter company registration number" /></div>
+                            </div>
+                            <div class="field">
+                                <label>Type of Entity</label>
+                                <div class="inp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg><input name="entityType" placeholder="e.g. LLC, FZE, Partnership" /></div>
+                            </div>
+                            <div class="field">
+                                <label>Country of Incorporation</label>
+                                <div class="inp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z" /></svg><input name="countryOfIncorporation" placeholder="Enter country of incorporation" /></div>
+                            </div>
+                            <div class="field">
+                                <label>Place of Registration</label>
+                                <div class="inp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" /><circle cx="12" cy="10" r="3" /></svg><input name="placeOfRegistration" placeholder="Enter place of registration" /></div>
+                            </div>
+                            <div class="field full">
+                                <label>VAT Registration No.</label>
+                                <div class="inp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18" /></svg><input name="vatRegistrationNo" placeholder="Enter VAT registration number" /></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="block">
+                        <h2><span class="sec-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" /><circle cx="12" cy="10" r="3" /></svg></span>Address</h2>
+                        <div class="grid">
+                            <div class="field full">
+                                <label>Address</label>
+                                <div class="inp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" /><circle cx="12" cy="10" r="3" /></svg><input name="address" placeholder="Enter your address" /></div>
+                            </div>
+                            <div class="field full">
+                                <label>Address 2</label>
+                                <div class="inp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" /><circle cx="12" cy="10" r="3" /></svg><input name="address2" placeholder="Apartment, suite, etc. (optional)" /></div>
+                            </div>
+                            <div class="field">
+                                <label>City</label>
+                                <div class="inp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5" /><path d="M9 8h.01M9 12h.01M9 16h.01M15 8h.01M15 12h.01M15 16h.01" /></svg><input name="city" placeholder="Enter your city" /></div>
+                            </div>
+                            <div class="field">
+                                <label>Post Code</label>
+                                <div class="inp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18" /></svg><input name="postCode" placeholder="Enter post code" /></div>
+                            </div>
+                            <div class="field">
+                                <label>Country/Region Code <b>*</b></label>
+                                <div class="inp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z" /></svg><input name="countryRegionCode" placeholder="e.g. AE" required /></div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <section class="block">
+                    <h2><span class="sec-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg></span>Contacts</h2>
+                    <div id="contacts"></div>
+                    <button type="button" class="add" data-add="contact">+ Add contact</button>
+                </section>
+
+                <section class="block">
+                    <h2><span class="sec-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2" /><path d="M2 10h20" /></svg></span>Bank Accounts</h2>
+                    <div id="banks"></div>
+                    <button type="button" class="add" data-add="bank">+ Add bank account</button>
+                </section>
+
+                <div id="msg"></div>
+            </div>
+
+            <div class="footer">
+                <button type="button" class="btn cancel" onclick="window.location.href='/'">Cancel</button>
+                <button type="submit" class="btn continue">Continue <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7" /></svg></button>
+            </div>
+        </form>
     </div>
 
     <template id="contactTemplate">
         <div class="line-row">
             <button type="button" class="remove" title="Remove">&times;</button>
             <div class="grid">
-                <div class="field"><label>Full Name</label><input data-field="fullName" /></div>
-                <div class="field"><label>Designation</label><input data-field="designation" /></div>
-                <div class="field"><label>Mobile Number</label><input data-field="mobileNumber" /></div>
-                <div class="field"><label>Email</label><input data-field="emailAddress" type="email" /></div>
+                <div class="field"><label>Full Name</label><input data-field="fullName" placeholder="Full name" /></div>
+                <div class="field"><label>Designation</label><input data-field="designation" placeholder="Designation" /></div>
+                <div class="field"><label>Mobile Number</label><input data-field="mobileNumber" placeholder="Mobile number" /></div>
+                <div class="field"><label>Email</label><input data-field="emailAddress" type="email" placeholder="Email address" /></div>
             </div>
         </div>
     </template>
@@ -87,13 +248,13 @@
         <div class="line-row">
             <button type="button" class="remove" title="Remove">&times;</button>
             <div class="grid">
-                <div class="field"><label>Bank Code</label><input data-field="bankCode" /></div>
-                <div class="field"><label>Bank Name</label><input data-field="name" /></div>
-                <div class="field"><label>Branch No.</label><input data-field="bankBranchNo" /></div>
-                <div class="field"><label>Account No.</label><input data-field="bankAccountNo" /></div>
-                <div class="field"><label>IBAN</label><input data-field="iban" /></div>
-                <div class="field"><label>SWIFT Code</label><input data-field="swiftCode" /></div>
-                <div class="field"><label>Currency</label><input data-field="currencyCode" /></div>
+                <div class="field"><label>Bank Code</label><input data-field="bankCode" placeholder="Bank code" /></div>
+                <div class="field"><label>Bank Name</label><input data-field="name" placeholder="Bank name" /></div>
+                <div class="field"><label>Branch No.</label><input data-field="bankBranchNo" placeholder="Branch no." /></div>
+                <div class="field"><label>Account No.</label><input data-field="bankAccountNo" placeholder="Account no." /></div>
+                <div class="field"><label>IBAN</label><input data-field="iban" placeholder="IBAN" /></div>
+                <div class="field"><label>SWIFT Code</label><input data-field="swiftCode" placeholder="SWIFT code" /></div>
+                <div class="field"><label>Currency</label><input data-field="currencyCode" placeholder="Currency" /></div>
                 <div class="field inline"><label><input type="checkbox" data-field="isPrimary" /> Primary account</label></div>
             </div>
         </div>

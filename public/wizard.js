@@ -1,6 +1,6 @@
-// Turns the form into a multi-step wizard:
-//   Step 1: company details (#headerSection)
-//   Step 2: Contacts   Step 3: Bank Accounts   Step 4: Attachments
+// Turns the form into a 2-step wizard:
+//   Step 1: Company Details (#headerSection — all required info)
+//   Step 2: Contacts + Bank Accounts + Attachments (optional extras)
 // All fields stay in the DOM (hidden steps still submit), so form.js is untouched.
 (function () {
     const form = document.getElementById('form');
@@ -10,22 +10,20 @@
     if (!body || !footer) return;
 
     const secOf = (id) => (document.getElementById(id) ? document.getElementById(id).closest('section.block') : null);
-    const steps = [
-        document.getElementById('headerSection'),
-        secOf('contacts'),
-        secOf('banks'),
-        secOf('attachments'),
-    ].filter(Boolean);
-    if (steps.length < 2) return; // e.g. register.html — no wizard
+    const groups = [
+        [document.getElementById('headerSection')],
+        [secOf('contacts'), secOf('banks'), secOf('attachments')],
+    ].map((g) => g.filter(Boolean)).filter((g) => g.length);
+    if (groups.length < 2) return; // e.g. register.html — no wizard
 
-    const titles = ['Company Details', 'Contacts', 'Bank Accounts', 'Attachments'];
-    const last = steps.length - 1;
+    const titles = ['Company Details', 'Contacts & Documents'];
+    const last = groups.length - 1;
     let current = 0;
 
     // ---- stepper ----
     const stepper = document.createElement('div');
     stepper.className = 'stepper';
-    steps.forEach((_, i) => {
+    groups.forEach((_, i) => {
         const item = document.createElement('div');
         item.className = 'step-item';
         item.innerHTML = `<span class="dot">${i + 1}</span><span class="lbl">${titles[i] || 'Step ' + (i + 1)}</span>`;
@@ -53,15 +51,17 @@
     footer.appendChild(left); footer.appendChild(right);
 
     function validateStep(i) {
-        const fields = steps[i].querySelectorAll('input[required], select[required], textarea[required]');
-        for (const f of fields) {
-            if (!f.checkValidity()) { f.reportValidity(); return false; }
+        for (const el of groups[i]) {
+            const fields = el.querySelectorAll('input[required], select[required], textarea[required]');
+            for (const f of fields) {
+                if (!f.checkValidity()) { f.reportValidity(); return false; }
+            }
         }
         return true;
     }
 
     function render() {
-        steps.forEach((el, i) => { el.hidden = i !== current; });
+        groups.forEach((g, i) => g.forEach((el) => { el.hidden = i !== current; }));
         [...stepper.children].forEach((item, i) => {
             item.classList.toggle('active', i === current);
             item.classList.toggle('done', i < current);
@@ -77,7 +77,6 @@
     nextBtn.addEventListener('click', () => { if (validateStep(current)) { current = Math.min(current + 1, last); render(); } });
     prevBtn.addEventListener('click', () => { current = Math.max(current - 1, 0); render(); });
 
-    // Don't submit on Enter unless on the last step.
     form.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA' && current !== last) e.preventDefault();
     });

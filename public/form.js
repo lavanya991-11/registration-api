@@ -98,6 +98,16 @@
         return header;
     }
 
+    // ---- Download the submission as a publicRegIntake JSON file ----
+    function downloadJson(obj, filename) {
+        const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
     // ---- Selects populated from a BC-backed endpoint (payment terms / methods) ----
     document.querySelectorAll('select[data-src]').forEach((sel) => {
         const ph = sel.dataset.placeholder || 'Select';
@@ -199,6 +209,9 @@
                     msg.textContent = data.message || `Registration ${data.regNo || regNo} submitted.`;
                 } else {
                     msg.textContent = `${data.message || 'Your registration has been submitted.'} (Ref: ${data.regNo || '—'})`;
+                    // Download the publicRegIntake JSON of this submission.
+                    const partnerType = base.indexOf('vendor') >= 0 ? 'Vendor' : 'Customer';
+                    downloadJson({ partnerType, regNo: data.regNo, ...body }, `publicRegIntake-${data.regNo || 'registration'}.json`);
                     form.reset();
                     document.querySelectorAll('#contacts .line-row, #banks .line-row').forEach((r) => r.remove());
                     attachments.length = 0; renderFiles();

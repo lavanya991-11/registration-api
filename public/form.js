@@ -202,9 +202,13 @@
                     msg.textContent = data.message || `Registration ${data.regNo || regNo} submitted.`;
                 } else {
                     msg.textContent = `${data.message || 'Your registration has been submitted.'} (Ref: ${data.regNo || '—'})`;
+                    // Reset every field to its initial value and start a fresh registration.
                     form.reset();
                     document.querySelectorAll('#contacts .line-row, #banks .line-row').forEach((r) => r.remove());
                     attachments.length = 0; renderFiles();
+                    fillPostCodes(); // restore the post-code dropdown to its "Select country first" state
+                    // Navigate the wizard back to step 1 (handled by wizard.js).
+                    form.dispatchEvent(new Event('wizard:reset'));
                 }
             } else {
                 msg.textContent = data.message || 'Submission failed. Please try again.';

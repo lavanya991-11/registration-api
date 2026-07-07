@@ -83,5 +83,8 @@
         if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA' && current !== last) e.preventDefault();
     });
 
+    // After a successful submit, form.js fires this to send the wizard back to step 1.
+    form.addEventListener('wizard:reset', () => { current = 0; render(); });
+
     render();
 })();

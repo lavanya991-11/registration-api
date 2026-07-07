@@ -101,26 +101,33 @@ async function attachToRegistration(regNo, files) {
     return data;
 }
 
-// Call the PP Public Reg. Intake codeunit via publicRegIntake('<seed>')/Microsoft.NAV.submit.
-// This creates header + contacts + banks + ATTACHMENTS in one shot (decodes base64 into
-// the Document Attachment table). Returns the codeunit's JSON envelope.
-let seedRegNo = null;
-async function getSeedRegNo() {
-    if (seedRegNo) return seedRegNo;
+// Public Reg. Intake — a SEPARATE intake entity per partner type:
+//   Customer -> custRegIntake('<seed>')/Microsoft.NAV.submit
+//   Vendor   -> vendRegIntake('<seed>')/Microsoft.NAV.submit
+// Each bound action creates header + contacts + banks + ATTACHMENTS in one shot
+// (decodes base64 into the Document Attachment table) and returns a JSON envelope.
+// A bound action must be invoked on an existing record key ("seed"), even though it
+// creates a brand-new registration — so we seed from the intake entity itself and
+// cache the seed per entity.
+const INTAKE_ENTITY = { Customer: 'custRegIntake', Vendor: 'vendRegIntake' };
+const seedCache = {};
+async function getSeedRegNo(entity) {
+    if (seedCache[entity]) return seedCache[entity];
     const token = await getToken();
-    const url = `${config.bc.apiBase()}/partnerRegistrations?$top=1&$select=regNo`;
+    const url = `${config.bc.apiBase()}/${entity}?$top=1&$select=regNo`;
     const { data } = await axios.get(url, { headers: { Authorization: `Bearer ${token}` }, timeout: 20000 });
-    seedRegNo = data.value?.[0]?.regNo || null;
-    return seedRegNo;
+    seedCache[entity] = data.value?.[0]?.regNo || null;
+    return seedCache[entity];
 }
 async function submitRegistration(registration) {
-    const seed = await getSeedRegNo();
-    if (!seed) throw new Error('No existing registration to seed the submit action.');
+    const entity = INTAKE_ENTITY[registration.partnerType] || INTAKE_ENTITY.Customer;
+    const seed = await getSeedRegNo(entity);
+    if (!seed) throw new Error(`No existing ${entity} record to seed the submit action.`);
     let data;
     try {
-        data = await invokeAction('publicRegIntake', seed, 'submit', { payload: JSON.stringify(registration) });
+        data = await invokeAction(entity, seed, 'submit', { payload: JSON.stringify(registration) });
     } catch (e) {
-        seedRegNo = null; // seed may be stale — refetch next time
+        seedCache[entity] = null; // seed may be stale — refetch next time
         throw e;
     }
     const raw = data?.value ?? data;
@@ -137,4 +144,12 @@ async function listByCode(entitySet) {
 const listPaymentMethods = () => listByCode('paymentMethods');
 const listPaymentTerms = () => listByCode('paymentTerms');
 
-module.exports = { getToken, create, getById, update, invokeAction, submitRegistration, attachToRegistration, listPostCodes, listPaymentMethods, listPaymentTerms, entityUrl };
+// List countries/regions from BC (code + name) for a Country dropdown.
+async function listCountriesRegions() {
+    const token = await getToken();
+    const url = `${config.bc.apiBase()}/countriesRegions?$select=code,name&$top=500`;
+    const { data } = await axios.get(url, { headers: { Authorization: `Bearer ${token}` }, timeout: 30000 });
+    return (data.value || []).map((c) => ({ code: c.code, name: c.name }));
+}
+
+module.exports = { getToken, create, getById, update, invokeAction, submitRegistration, attachToRegistration, listPostCodes, listPaymentMethods, listPaymentTerms, listCountriesRegions, entityUrl };

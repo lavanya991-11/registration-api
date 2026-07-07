@@ -41,5 +41,6 @@ function cachedList(fn) {
 
 router.get('/payment-methods', rateLimit, cachedList(bc.listPaymentMethods));
 router.get('/payment-terms', rateLimit, cachedList(bc.listPaymentTerms));
+router.get('/countries', rateLimit, cachedList(bc.listCountriesRegions));
 
 module.exports = router;

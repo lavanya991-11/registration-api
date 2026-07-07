@@ -6,6 +6,7 @@ const bc = require('../modules/bcClient');
 const {
     newRegNo,
     getHeader,
+    toIntakeHeader,
     toBcPayload,
     toBcUpdatePayload,
     validContactLines,
@@ -58,7 +59,7 @@ module.exports = function createController(partnerType) {
             const attachments = (Array.isArray(req.body?.attachments) ? req.body.attachments : [])
                 .map((a) => ({ fileName: a.fileName || a.name, base64: a.base64 }))
                 .filter((a) => a.fileName && a.base64);
-            const registration = { partnerType: type, header: getHeader(req.body), contactLines, bankLines, attachments };
+            const registration = { partnerType: type, header: toIntakeHeader(getHeader(req.body), type), contactLines, bankLines, attachments };
 
             // PREFERRED: PP Public Reg. Intake codeunit — creates header + contacts + banks
             // + attachments (decodes base64 into the Document Attachment factbox) in one call.

@@ -20,8 +20,8 @@ const config = {
         host: process.env.BC_API_HOST || 'api.businesscentral.dynamics.com',
         environment: process.env.BC_ENVIRONMENT,
         companyId: process.env.BC_COMPANY_ID,
-        publisher: process.env.BC_API_PUBLISHER || 'partnerPortal',
-        group: process.env.BC_API_GROUP || 'partnerPortal',
+        publisher: process.env.BC_API_PUBLISHER || 'regPortal',
+        group: process.env.BC_API_GROUP || 'regPortal',
         version: process.env.BC_API_VERSION || 'v2.0',
     },
 
@@ -42,9 +42,13 @@ const config = {
     },
 };
 
-// .../api/partnerPortal/partnerPortal/v2.0/companies(<guid>)
-config.bc.apiBase = () =>
-    `https://${config.bc.host}/v2.0/${config.bc.environment}/api/${config.bc.publisher}/${config.bc.group}/${config.bc.version}` +
-    `/companies(${config.bc.companyId})`;
+// .../api/regPortal/regPortal/v2.0/companies(<guid>)
+// Empty publisher/group segments are skipped, so the route shape is fully
+// configurable (e.g. the legacy "partnerPortal/partnerPortal" still works).
+config.bc.apiBase = () => {
+    const route = [config.bc.publisher, config.bc.group, config.bc.version].filter(Boolean).join('/');
+    return `https://${config.bc.host}/v2.0/${config.bc.environment}/api/${route}` +
+        `/companies(${config.bc.companyId})`;
+};
 
 module.exports = config;

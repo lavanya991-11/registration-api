@@ -25,9 +25,9 @@ services:
       - key: BC_API_HOST
         value: api.businesscentral.dynamics.com
       - key: BC_API_PUBLISHER
-        value: partnerPortal
+        value: regPortal
       - key: BC_API_GROUP
-        value: partnerPortal
+        value: regPortal
       - key: BC_API_VERSION
         value: v2.0
       - key: GENERATE_REG_NO

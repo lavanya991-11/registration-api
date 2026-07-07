@@ -43,6 +43,17 @@ function getHeader(body) {
     return body || {};
 }
 
+// The regPortal intake codeunit (custRegIntake / vendRegIntake) expects the partner
+// email under a TYPE-SPECIFIC field: customerEmail for Customer, vendorEmail for
+// Vendor. The public form still submits `partnerEmail`, so copy it across here.
+// Other header fields are unchanged.
+function toIntakeHeader(header, partnerType) {
+    const emailField = partnerType === 'Vendor' ? 'vendorEmail' : 'customerEmail';
+    const out = { ...(header || {}) };
+    if (out.partnerEmail && !out[emailField]) out[emailField] = out.partnerEmail;
+    return out;
+}
+
 function pick(source, fields) {
     const out = {};
     for (const key of fields) {
@@ -125,6 +136,7 @@ function validateUpdate(body) {
 module.exports = {
     HEADER_FIELDS,
     getHeader,
+    toIntakeHeader,
     newRegNo,
     toBcPayload,
     toBcUpdatePayload,

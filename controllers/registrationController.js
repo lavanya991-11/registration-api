@@ -76,26 +76,19 @@ module.exports = function createController(partnerType) {
                 if (env && env.success === false) {
                     return fail(res, 400, env.errorCode || 'BC_VALIDATION', env.message || 'Registration failed in BC.');
                 }
+                return fail(res, 502, 'BC_ERROR', 'Registration could not be processed. Please try again.');
             } catch (submitErr) {
-                console.error(`[submit ${type}] intake failed, falling back:`, submitErr.response?.status, submitErr.response?.data?.error?.message || submitErr.message);
-                // fall through to the legacy flow so the portal keeps working
-            }
-
-            // FALLBACK: create header, then contacts/banks via updateRegistration.
-            // (No attachments — used only until the Partner Reg. Nos. series is aligned.)
-            let regNo;
-            try {
-                const preRegNo = config.regNo.generate ? newRegNo(config.regNo.prefix) : undefined;
-                const created = await bc.create(ENTITY, toBcPayload(req.body, type, preRegNo));
-                regNo = created.regNo;
-                if (contactLines.length || bankLines.length) {
-                    await bc.invokeAction(ENTITY, regNo, 'updateRegistration', {
-                        payload: JSON.stringify({ partnerType: type, header: registration.header, contactLines, bankLines }),
-                    });
+                // The intake submit action is BOUND to an existing record ("seed"). If the
+                // intake entity has no records yet (e.g. the very first vendor), the bound
+                // action cannot be invoked. This must be resolved in Business Central — by
+                // seeding one record or exposing an unbound submit action — it cannot be
+                // fixed from this backend (the intake API page rejects inserts).
+                if (/seed the submit action/i.test(submitErr.message || '')) {
+                    console.error(`[submit ${type}] no seed record in intake entity: ${submitErr.message}`);
+                    return fail(res, 503, 'NO_SEED_RECORD',
+                        'Registration is temporarily unavailable — this registration channel needs to be initialised in Business Central. Please contact us.');
                 }
-                return res.status(201).json({ success: true, regNo, status: created.status, message: SUCCESS_MESSAGE });
-            } catch (err) {
-                return handleBcError(err, res, 'create', regNo);
+                return handleBcError(submitErr, res, 'submit', registration.header?.regNo);
             }
         },
 
